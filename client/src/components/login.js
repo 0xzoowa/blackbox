@@ -8,7 +8,7 @@ const Login = ({ onLogin }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Implement your login logic here
+    // Implement login logic
     console.log("Login attempt with:", { email, password });
     onLogin();
   };
@@ -17,7 +17,7 @@ const Login = ({ onLogin }) => {
     <div className="flex items-center justify-center min-h-[calc(100vh-64px-56px)] bg-gray-100 dark:bg-gray-900 ">
       <div className="px-8 py-6 mt-4 text-left bg-white dark:bg-gray-800 shadow-lg rounded-lg">
         <h3 className="text-2xl font-bold text-center text-purple-600 dark:text-purple-400">
-          Login to your account
+          Login
         </h3>
         <form onSubmit={handleSubmit}>
           <div className="mt-4">
@@ -57,12 +57,12 @@ const Login = ({ onLogin }) => {
               <button className="w-full px-6 py-2 text-white bg-purple-600 rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50">
                 Login
               </button>
-              <Link
+              {/* <Link
                 to="/signup"
                 className="mt-4 text-sm text-purple-600 hover:underline"
               >
                 Don't have an account? Sign up
-              </Link>
+              </Link> */}
             </div>
           </div>
         </form>

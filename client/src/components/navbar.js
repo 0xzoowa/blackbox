@@ -36,6 +36,12 @@ const Navbar = ({ darkMode, toggleDarkMode }) => {
             >
               Blog
             </Link>
+            <Link
+              to="/forblog"
+              className="px-3 py-2 rounded-md text-sm font-medium text-white hover:text-gray-200"
+            >
+              FBlog
+            </Link>
 
             <button
               onClick={toggleDarkMode}

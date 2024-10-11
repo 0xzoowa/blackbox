@@ -5,42 +5,205 @@ import Home from "./components/home";
 import About from "./components/about";
 import Blog from "./components/blog";
 import Footer from "./components/footer";
+import ForBlog from "./components/fordeck";
+import Login from "./components/login";
+import FullPost from "./components/fullPostView";
 
 const App = () => {
   const [darkMode, setDarkMode] = useState(false);
-  const [blogPosts, setBlogPosts] = useState([]);
-
-  useEffect(() => {
-    fetchBlogPosts();
-  }, []);
-
-  const fetchBlogPosts = async () => {
-    try {
-      const response = await fetch("http://localhost:5000/api/blog");
-      const data = await response.json();
-      setBlogPosts(data);
-    } catch (error) {
-      console.error("Error fetching blog posts:", error);
-    }
-  };
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
   };
+  const blogPosts = [
+    {
+      _id: "1",
+      title: "Exploring C# Basics",
+      content: [
+        {
+          type: "paragraph",
+          text: "C# (pronounced 'C-sharp') is a modern, object-oriented programming language developed by Microsoft. It's part of the .NET framework and is widely used for building Windows applications, web services, and games.",
+        },
+        { type: "heading", text: "Why Learn C#?" },
+        {
+          type: "paragraph",
+          text: "C# combines the power and flexibility of C++ with the simplicity of Visual Basic. It's an excellent language for beginners and experienced programmers alike, offering features like:",
+        },
+        { type: "subheading", text: "1. Type Safety" },
+        {
+          type: "paragraph",
+          text: "C# is a statically-typed language, which means it checks for type errors at compile-time, reducing runtime errors.",
+        },
+        { type: "subheading", text: "2. Object-Oriented" },
+        {
+          type: "paragraph",
+          text: "It fully supports object-oriented programming concepts like encapsulation, inheritance, and polymorphism.",
+        },
+        {
+          type: "attachment",
+          url: "/api/placeholder/600/400",
+          alt: "C# Code Example",
+        },
+        { type: "heading", text: "Your First C# Program" },
+        {
+          type: "paragraph",
+          text: "Let's start with the classic 'Hello, World!' program in C#:",
+        },
+        {
+          type: "code",
+          text: `using System;
+
+                class Program
+                {
+                    static void Main()
+                    {
+                        Console.WriteLine("Hello, World!");
+                    }
+                }`,
+        },
+        {
+          type: "paragraph",
+          text: "This simple program demonstrates the basic structure of a C# application. The 'using System;' line allows us to use classes from the System namespace, which includes Console for input/output operations.",
+        },
+        { type: "heading", text: "Next Steps" },
+        {
+          type: "paragraph",
+          text: "Now that you've seen a basic C# program, you're ready to dive deeper into the language. In future posts, we'll explore variables, control structures, classes, and more. Stay tuned!",
+        },
+      ],
+      createdAt: "2024-09-15T10:00:00Z",
+    },
+    {
+      _id: "2",
+      title: "Why Learn C#?",
+      content: [
+        { type: "heading", text: "Why Learn C#?" },
+        {
+          type: "paragraph",
+          text: "C# combines the power and flexibility of C++ with the simplicity of Visual Basic. It's an excellent language for beginners and experienced programmers alike, offering features like:",
+        },
+      ],
+      createdAt: "2024-09-16T11:30:00Z",
+    },
+    {
+      _id: "3",
+      title: "Understanding C# Type Safety",
+      content: [
+        { type: "subheading", text: "1. Type Safety" },
+        {
+          type: "paragraph",
+          text: "C# is a statically-typed language, which means it checks for type errors at compile-time, reducing runtime errors.",
+        },
+      ],
+      createdAt: "2024-09-17T09:45:00Z",
+    },
+    {
+      _id: "4",
+      title: "C# and Object-Oriented Programming",
+      content: [
+        { type: "subheading", text: "2. Object-Oriented" },
+        {
+          type: "paragraph",
+          text: "It fully supports object-oriented programming concepts like encapsulation, inheritance, and polymorphism.",
+        },
+      ],
+      createdAt: "2024-09-18T12:15:00Z",
+    },
+    {
+      _id: "5",
+      title: "C# Code Example",
+      content: [
+        {
+          type: "attachment",
+          url: "/api/placeholder/600/400",
+          alt: "C# Code Example",
+        },
+      ],
+      createdAt: "2024-09-19T08:30:00Z",
+    },
+    {
+      _id: "6",
+      title: "Your First C# Program",
+      content: [
+        { type: "heading", text: "Your First C# Program" },
+        {
+          type: "paragraph",
+          text: "Let's start with the classic 'Hello, World!' program in C#:",
+        },
+      ],
+      createdAt: "2024-09-20T14:00:00Z",
+    },
+    {
+      _id: "7",
+      title: "C# Hello, World Program",
+      content: [
+        {
+          type: "code",
+          text: `using System;
+
+class Program
+{
+    static void Main()
+    {
+        Console.WriteLine("Hello, World!");
+    }
+}`,
+        },
+      ],
+      createdAt: "2024-09-21T15:20:00Z",
+    },
+    {
+      _id: "8",
+      title: "C# Application Structure",
+      content: [
+        {
+          type: "paragraph",
+          text: "This simple program demonstrates the basic structure of a C# application. The 'using System;' line allows us to use classes from the System namespace, which includes Console for input/output operations.",
+        },
+      ],
+      createdAt: "2024-09-22T10:10:00Z",
+    },
+    {
+      _id: "9",
+      title: "Next Steps in C#",
+      content: [
+        { type: "heading", text: "Next Steps" },
+        {
+          type: "paragraph",
+          text: "Now that you've seen a basic C# program, you're ready to dive deeper into the language. In future posts, we'll explore variables, control structures, classes, and more. Stay tuned!",
+        },
+      ],
+      createdAt: "2024-09-23T11:50:00Z",
+    },
+  ];
+
+  //fetch blog posts here
+  //login here (guest login, admin login)
+  // setislogged in to true here
+  //setblogpost here
+  //pass in blogpost and islogin as props into component elements
+  //only display blog is user is logged in as either guest or admin
+  //only disply edit, delete or archive is user is admin
 
   return (
     <Router>
       <div
         className={`min-h-screen flex flex-col ${
           darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"
-        }`}
+        } `}
       >
         <NavBar darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
-        <div className="pt-16">
+        <div className="pt-16 flex-grow pb-12">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
             <Route path="/blog" element={<Blog blogPosts={blogPosts} />} />
+            <Route path="/forblog" element={<ForBlog />} />
+            <Route path="/login" element={<Login />} />
+            <Route
+              path="/post/:id"
+              element={<FullPost blogPosts={blogPosts} />}
+            />
           </Routes>
         </div>
 
