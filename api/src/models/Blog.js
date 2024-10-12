@@ -21,6 +21,7 @@ const contentSchema = new Schema(
     text: { type: String, required: true }, //if content type is attachment, this will be a url
     archive: { type: Boolean, required: true, default: false },
     deleted: { type: Boolean, required: true, default: false },
+    private: { type: Boolean, required: true, default: false },
   },
   {
     timestamps: true,

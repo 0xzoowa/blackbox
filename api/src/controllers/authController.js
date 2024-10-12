@@ -32,7 +32,12 @@ exports.login = async (req, res) => {
     const token = signToken(user._id);
     res.json({
       token,
-      user: { id: user._id, username: user.username, email: user.email },
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+      },
     });
   } catch (error) {
     console.log(error.message);

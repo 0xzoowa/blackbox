@@ -5,16 +5,31 @@ import Home from "./components/home";
 import About from "./components/about";
 import Blog from "./components/blog";
 import Footer from "./components/footer";
-import ForBlog from "./components/fordeck";
 import Login from "./components/login";
 import FullPost from "./components/fullPostView";
+import Guest from "./components/guest";
+import { MyContext } from "./context/myContext";
 
 const App = () => {
   const [darkMode, setDarkMode] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState({});
+  const [token, setToken] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [blogPost, setBlogPost] = useState(null);
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
   };
+
+  useEffect(() => {
+    if (user && user.role === "chief") {
+      setIsAdmin(true);
+    } else {
+      setIsAdmin(false);
+    }
+  }, [user]);
+
   const blogPosts = [
     {
       _id: "1",
@@ -176,10 +191,12 @@ class Program
       createdAt: "2024-09-23T11:50:00Z",
     },
   ];
-
+  // console.log("token:", token);
+  // console.log("user:", user);
   //fetch blog posts here
+  //persist state
   //login here (guest login, admin login)
-  // setislogged in to true here
+  // setislogged in to true via context and access via global variable
   //setblogpost here
   //pass in blogpost and islogin as props into component elements
   //only display blog is user is logged in as either guest or admin
@@ -192,22 +209,38 @@ class Program
           darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"
         } `}
       >
-        <NavBar darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
-        <div className="pt-16 flex-grow pb-12">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/blog" element={<Blog blogPosts={blogPosts} />} />
-            <Route path="/forblog" element={<ForBlog />} />
-            <Route path="/login" element={<Login />} />
-            <Route
-              path="/post/:id"
-              element={<FullPost blogPosts={blogPosts} />}
-            />
-          </Routes>
-        </div>
+        <MyContext.Provider
+          value={{
+            isLoggedIn,
+            setIsLoggedIn,
+            user,
+            setUser,
+            token,
+            setToken,
+            isAdmin,
+            setIsAdmin,
+          }}
+        >
+          <NavBar darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
+          <div className="pt-16 flex-grow pb-12">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/about" element={<About />} />
+              <Route
+                path="/blog"
+                element={<Blog blogPosts={blogPosts} token={token} />}
+              />
+              <Route path="/login" element={<Login />} />
+              <Route
+                path="/post/:id"
+                element={<FullPost blogPosts={blogPosts} />}
+              />
+              <Route path="/guest" element={<Guest />} />
+            </Routes>
+          </div>
 
-        <Footer />
+          <Footer />
+        </MyContext.Provider>
       </div>
     </Router>
   );

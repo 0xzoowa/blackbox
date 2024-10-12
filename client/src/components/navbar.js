@@ -1,8 +1,10 @@
-import React from "react";
+import { React, useContext } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { Sun, Moon, Home } from "lucide-react";
+import { MyContext } from "../context/myContext";
 
 const Navbar = ({ darkMode, toggleDarkMode }) => {
+  const { isLoggedIn, setIsLoggedIn } = useContext(MyContext);
   return (
     <nav className="fixed top-0 left-0 right-0 bg-gray-800 shadow-lg z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -30,19 +32,14 @@ const Navbar = ({ darkMode, toggleDarkMode }) => {
             >
               About
             </Link>
-            <Link
-              to="/blog"
-              className="px-3 py-2 rounded-md text-sm font-medium text-white hover:text-gray-200"
-            >
-              Blog
-            </Link>
-            <Link
-              to="/forblog"
-              className="px-3 py-2 rounded-md text-sm font-medium text-white hover:text-gray-200"
-            >
-              FBlog
-            </Link>
-
+            {isLoggedIn && (
+              <Link
+                to="/blog"
+                className="px-3 py-2 rounded-md text-sm font-medium text-white hover:text-gray-200"
+              >
+                Blog
+              </Link>
+            )}
             <button
               onClick={toggleDarkMode}
               className="p-2 rounded-full hover:bg-purple-700 transition-colors text-white"

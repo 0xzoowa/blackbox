@@ -23,7 +23,7 @@ const FullPost = ({ blogPosts }) => {
       />
       <Link
         to="/blog"
-        className="mt-8 inline-block text-blue-500 hover:underline"
+        className="mt-8 inline-block text-blue-400 hover:underline"
       >
         Back to all posts
       </Link>

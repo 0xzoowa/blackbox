@@ -495,16 +495,16 @@
 // return (
 //   <div className="container mx-auto p-6 relative min-h-[calc(100vh-64px-50px)]">
 //     {/* create blog post */
-//     {isFormVisible && (
-//       <BlogPostForm
-//         post={editingPost}
-//         onSubmit={editingPost ? handleUpdatePost : handleCreatePost}
-//         onCancel={() => {
-//           setIsFormVisible(false);
-//           setEditingPost(null);
-//         }}
-//       />
-//     )}
+// {isFormVisible && (
+//   <BlogPostForm
+//     post={editingPost}
+//     onSubmit={editingPost ? handleUpdatePost : handleCreatePost}
+//     onCancel={() => {
+//       setIsFormVisible(false);
+//       setEditingPost(null);
+//     }}
+//   />
+// )}
 //     {/* display all posts */}
 //     {blogPosts.length > 0 ? (
 //       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -548,14 +548,14 @@
 //           </article>
 //         ))}
 //       </div>
-//     ) : (
-//       <div className="flex flex-col items-center justify-center h-64">
-//         <FileX size={64} className="text-gray-400 mb-4" />
-//         <p className="text-base text-gray-600 dark:text-gray-400">
-//           No blog posts found
-//         </p>
-//       </div>
-//     )}
+// ) : (
+//   <div className="flex flex-col items-center justify-center h-64">
+//     <FileX size={64} className="text-gray-400 mb-4" />
+//     <p className="text-base text-gray-600 dark:text-gray-400">
+//       No blog posts found
+//     </p>
+//   </div>
+// )}
 
 //     {!isFormVisible && (
 //       <div className="fixed bottom-20 right-8 group">
@@ -571,4 +571,39 @@
 //       </div>
 //     )}
 //   </div>
-// );
+// );    <>
+//   {isLoggedIn ? (
+//     <h1>Logged in</h1>
+//   ) : (
+//     <button onClick={() => setIsLoggedIn(true)}>click me</button>
+//   )}
+// </>
+
+// useEffect(() => {
+//   fetchBlogPosts();
+// }, []);
+
+// const fetchBlogPosts = async () => {
+//   try {
+//     // Retrieve the token from localStorage (or wherever it's stored)
+//     const token =
+//       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZjgxZmUwMTlmOWE0NDcxYjRhYTYxYyIsImlhdCI6MTcyNzUzODMwNywiZXhwIjoxNzM1MzE0MzA3fQ.8uh44D4p8432Qhu8YVZEmirG76q4737mwYMQNnES2ic";
+//     const response = await fetch("http://localhost:5000/api/blogs", {
+//       method: "GET",
+//       headers: {
+//         "Content-Type": "application/json",
+//         Authorization: `Bearer ${token}`, // Include the Bearer token here
+//       },
+//     });
+
+//     if (response.ok) {
+//       const data = await response.json();
+//       setBlogPosts(data);
+//     } else {
+//       console.error("Failed to fetch blog posts:", response.statusText);
+//       // Optionally handle error responses here (e.g., 401 Unauthorized)
+//     }
+//   } catch (error) {
+//     console.error("Error fetching blog posts:", error);
+//   }
+// };

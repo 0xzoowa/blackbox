@@ -57,6 +57,7 @@ const About = () => {
               <ul className="list-disc list-inside text-xs">
                 <li>ExpressJS</li>
                 <li>NestJS</li>
+                <li>ReactJS</li>
                 <li>ASP.NET Core</li>
               </ul>
             </div>
@@ -102,15 +103,15 @@ const About = () => {
               it helpful
             </li>
             <li>
-              <strong>Content</strong>: You can explore some of my insights in
-              the{" "}
+              <strong>Content</strong>: You can explore some of my insights by
+              using the{" "}
               <Link
                 to="/blog"
                 className="text-purple-600 dark:text-purple-400 hover:underline"
               >
-                blog
+                Tour as Guest
               </Link>{" "}
-              section
+              button in the home section
             </li>
           </ul>
         </section>

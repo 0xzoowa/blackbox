@@ -1,16 +1,45 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { LogIn } from "lucide-react";
+import { MyContext } from "../context/myContext";
+import axios from "axios";
 
-const Login = ({ onLogin }) => {
+const Login = () => {
+  const navigate = useNavigate();
+  const { user, setUser } = useContext(MyContext);
+  const { token, setToken } = useContext(MyContext);
+  const { isLoggedIn, setIsLoggedIn } = useContext(MyContext);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
     // Implement login logic
-    console.log("Login attempt with:", { email, password });
-    onLogin();
+    Login();
+  };
+
+  const Login = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/auth/login",
+        {
+          email,
+          password,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      setToken(response.data.token);
+      setUser(response.data.user);
+      setIsLoggedIn(true);
+      navigate("/blog");
+    } catch (error) {
+      console.error("Error logging in:", error);
+    }
   };
 
   return (
