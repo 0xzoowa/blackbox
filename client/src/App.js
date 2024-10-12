@@ -8,6 +8,7 @@ import Footer from "./components/footer";
 import Login from "./components/login";
 import FullPost from "./components/fullPostView";
 import Guest from "./components/guest";
+import LogOut from "./components/logout";
 import { MyContext } from "./context/myContext";
 
 const App = () => {
@@ -224,6 +225,7 @@ class Program
                 element={<Blog blogPosts={blogPosts} token={token} />}
               />
               <Route path="/login" element={<Login />} />
+              <Route path="/logout" element={<LogOut />} />
               <Route
                 path="/post/:id"
                 element={<FullPost blogPosts={blogPosts} />}
