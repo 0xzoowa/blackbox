@@ -191,16 +191,9 @@ class Program
       createdAt: "2024-09-23T11:50:00Z",
     },
   ];
-  // console.log("token:", token);
-  // console.log("user:", user);
-  //fetch blog posts here
+
+  //blog functionalities
   //persist state
-  //login here (guest login, admin login)
-  // setislogged in to true via context and access via global variable
-  //setblogpost here
-  //pass in blogpost and islogin as props into component elements
-  //only display blog is user is logged in as either guest or admin
-  //only disply edit, delete or archive is user is admin
 
   return (
     <Router>

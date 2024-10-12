@@ -607,3 +607,17 @@
 //     console.error("Error fetching blog posts:", error);
 //   }
 // };
+/**
+ *     <MyContext.Provider
+          value={{
+            isLoggedIn,
+            setIsLoggedIn,
+            user,
+            setUser,
+            token,
+            setToken,
+            isAdmin,
+            setIsAdmin,
+          }}
+        > </MyContext.Provider>
+ */
