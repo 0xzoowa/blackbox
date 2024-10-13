@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import BlogPost from "./blogPost";
 import { PlusCircle, FileX, UserX } from "lucide-react";
 import BlogPostForm from "./BlogPostForm";
+import BlogPostEditor from "./blogPostEditor";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { MyContext } from "../context/myContext";
@@ -95,93 +96,94 @@ const Blog = ({ blogPosts, token }) => {
       {isLoggedIn ? (
         <div className="container mx-auto p-6 max-w-3xl min-h-[calc(100vh-64px-56px)]">
           {isFormVisible && (
-            <BlogPostForm
-              post={editingPost}
-              onSubmit={editingPost ? handleUpdatePost : handleCreatePost}
-              onCancel={() => {
-                setIsFormVisible(false);
-                setEditingPost(null);
-              }}
-            />
+            // <BlogPostForm
+            //   post={editingPost}
+            //   onSubmit={editingPost ? handleUpdatePost : handleCreatePost}
+            //   onCancel={() => {
+            //     setIsFormVisible(false);
+            //     setEditingPost(null);
+            //   }}
+            // />
+            <BlogPostEditor />
           )}
-          {blogPosts.length > 0 ? (
-            blogPosts.map((post) => (
-              <article
-                key={post._id}
-                className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 m-8 cursor-pointer"
-                onClick={() => togglePostContent(post._id)}
-              >
-                <h3 className="text-lg font-semibold mb-2">{post.title}</h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mb-2 mr-5">
-                  {new Date(post.createdAt).toLocaleDateString()}
-                </p>
-                {expandedPost === post._id ? (
-                  <div>
-                    <p className="text-gray-700 dark:text-gray-300 mb-4">
-                      {post.content[0].text
-                        ? post.content[0].text.substring(0, 100)
-                        : ""}
-                    </p>
-                    <span>
-                      <Link
-                        to={`/post/${post._id}`}
-                        className="text-blue-400 hover:underline"
+          {!isFormVisible && blogPosts.length > 0
+            ? blogPosts.map((post) => (
+                <article
+                  key={post._id}
+                  className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 m-8 cursor-pointer"
+                  onClick={() => togglePostContent(post._id)}
+                >
+                  <h3 className="text-lg font-semibold mb-2">{post.title}</h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-2 mr-5">
+                    {new Date(post.createdAt).toLocaleDateString()}
+                  </p>
+                  {expandedPost === post._id ? (
+                    <div>
+                      <p className="text-gray-700 dark:text-gray-300 mb-4">
+                        {post.content[0].text
+                          ? post.content[0].text.substring(0, 100)
+                          : ""}
+                      </p>
+                      <span>
+                        <Link
+                          to={`/post/${post._id}`}
+                          className="text-indigo-600 hover:underline"
+                        >
+                          Read More ...
+                        </Link>
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="flex-grow max-w-3xl">
+                      <p className="text-gray-700 dark:text-gray-300 mb-4">
+                        {post.content[0].text
+                          ? post.content[0].text.substring(0, 100)
+                          : ""}
+                      </p>
+                    </div>
+                  )}
+                  {isLoggedIn && isAdmin && (
+                    <div className="flex justify-end space-x-2 mt-2">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEditingPost(post);
+                          setIsFormVisible(true);
+                        }}
+                        className="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600"
                       >
-                        Read More ...
-                      </Link>
-                    </span>
-                  </div>
-                ) : (
-                  <div className="flex-grow max-w-3xl">
-                    <p className="text-gray-700 dark:text-gray-300 mb-4">
-                      {post.content[0].text
-                        ? post.content[0].text.substring(0, 100)
-                        : ""}
-                    </p>
-                  </div>
-                )}
-                {isLoggedIn && isAdmin && (
-                  <div className="flex justify-end space-x-2 mt-2">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setEditingPost(post);
-                        setIsFormVisible(true);
-                      }}
-                      className="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeletePost(post._id);
-                      }}
-                      className="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600"
-                    >
-                      Delete
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleArchivePost(post._id);
-                      }}
-                      className="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600"
-                    >
-                      Archive
-                    </button>
-                  </div>
-                )}
-              </article>
-            ))
-          ) : (
-            <div className="flex flex-col items-center justify-center h-64">
-              <FileX size={64} className="text-gray-400 mb-4" />
-              <p className="text-base text-gray-600 dark:text-gray-400">
-                No blog posts found
-              </p>
-            </div>
-          )}
+                        Edit
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeletePost(post._id);
+                        }}
+                        className="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600"
+                      >
+                        Delete
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleArchivePost(post._id);
+                        }}
+                        className="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600"
+                      >
+                        Archive
+                      </button>
+                    </div>
+                  )}
+                </article>
+              ))
+            : !isFormVisible && (
+                <div className="flex flex-col items-center justify-center h-64">
+                  <FileX size={64} className="text-gray-400 mb-4" />
+                  <p className="text-base text-gray-600 dark:text-gray-400">
+                    No blog posts found
+                  </p>
+                </div>
+              )}
           {isAdmin && !isFormVisible && (
             <div className="fixed bottom-20 right-8 group">
               <button
