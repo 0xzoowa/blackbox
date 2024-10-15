@@ -30,6 +30,7 @@ exports.login = async (req, res) => {
       return res.status(401).json({ message: "Incorrect credentials." });
     }
     const token = signToken(user._id);
+    console.log("token", token);
     res.json({
       token,
       user: {

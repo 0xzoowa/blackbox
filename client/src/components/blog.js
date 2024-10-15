@@ -7,13 +7,14 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { MyContext } from "../context/myContext";
 
-const Blog = ({ blogPosts, token }) => {
-  // const [blogPosts, setBlogPosts] = useState([]);
+const Blog = ({ blogPosts }) => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [editingPost, setEditingPost] = useState(null);
   const [expandedPost, setExpandedPost] = useState(null);
-  const { isLoggedIn, setIsLoggedIn } = useContext(MyContext);
-  const { isAdmin, setIsAdmin } = useContext(MyContext);
+  const { isLoggedIn, setBlogPost, token, isAdmin } = useContext(MyContext);
+
   const handleCreatePost = async (postData) => {
     try {
       const response = await axios.post(
@@ -53,6 +54,53 @@ const Blog = ({ blogPosts, token }) => {
     }
   };
 
+  const fetchBlogPost = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:5000/api/blogs",
+
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log(response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching blog posts:", error);
+      throw error;
+    }
+  };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const blogs = await fetchBlogPost();
+        if (blogs) {
+          // Transform the data to match the expected format
+          const transformedData = blogs.map((post) => ({
+            _id: post._id,
+            title: post.title,
+            content: post.content.map((contentId) => ({
+              type: contentId.type,
+              text: contentId.text,
+            })), // You might need to fetch actual content
+            createdAt: post.createdAt,
+            // Add other fields as needed
+          }));
+          setBlogPost(transformedData);
+        }
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [token, setBlogPost]);
+
   const handleDeletePost = async (postId) => {
     if (window.confirm("Are you sure you want to delete this post?")) {
       try {
@@ -90,6 +138,8 @@ const Blog = ({ blogPosts, token }) => {
   const togglePostContent = (postId) => {
     setExpandedPost(expandedPost === postId ? null : postId);
   };
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   return (
     <>
@@ -150,7 +200,7 @@ const Blog = ({ blogPosts, token }) => {
                           setEditingPost(post);
                           setIsFormVisible(true);
                         }}
-                        className="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600"
+                        className="px-2 py-1 border hover:bg-indigo-600  hover:text-white border-gray-300 dark:border-gray-600 rounded-md  focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600"
                       >
                         Edit
                       </button>
@@ -159,7 +209,7 @@ const Blog = ({ blogPosts, token }) => {
                           e.stopPropagation();
                           handleDeletePost(post._id);
                         }}
-                        className="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600"
+                        className="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-indigo-600  hover:text-white focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600"
                       >
                         Delete
                       </button>
@@ -168,7 +218,7 @@ const Blog = ({ blogPosts, token }) => {
                           e.stopPropagation();
                           handleArchivePost(post._id);
                         }}
-                        className="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600"
+                        className="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-indigo-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600"
                       >
                         Archive
                       </button>
@@ -186,12 +236,15 @@ const Blog = ({ blogPosts, token }) => {
               )}
           {isAdmin && !isFormVisible && (
             <div className="fixed bottom-20 right-8 group">
-              <button
-                onClick={() => setIsFormVisible(true)}
+              <Link
+                to="/blog/create"
+                onClick={(e) => {
+                  setIsFormVisible(true);
+                }}
                 className="w-14 h-14 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 flex items-center justify-center shadow-lg"
               >
                 <PlusCircle size={24} />
-              </button>
+              </Link>
               <span className="absolute bottom-16 right-0 bg-indigo-800 text-white px-2 py-1 rounded text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                 Add Blog Post
               </span>

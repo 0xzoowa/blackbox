@@ -1,8 +1,15 @@
-const Blog = require("../models/Blog");
+const { BlogPost, Content } = require("../models/Blog");
 
 exports.createBlog = async (req, res) => {
   try {
-    const { title, content } = req.body;
+    const { title, contents } = req.body;
+
+    // Check if contentArray exists and is an array
+    if (!Array.isArray(contents)) {
+      return res.status(400).json({
+        message: "Invalid content array format",
+      });
+    }
     const media = req.files
       ? req.files.map((file) => ({
           type: file.mimetype.split("/")[0],
@@ -10,17 +17,26 @@ exports.createBlog = async (req, res) => {
         }))
       : [];
 
-    const blog = await Blog.create({
+    const blog = await BlogPost.create({
       title,
-      content,
       author: req.user._id,
-      media,
     });
+    // Iterate through the content array from UI
+    for (const contentItem of contents) {
+      // Create the content
+      const content = await Content.create({
+        blogId: blog._id,
+        type: contentItem.type,
+        text: contentItem.text,
+      });
+      blog.content.push(content._id);
+    }
+    await blog.save();
 
-    res.status(201).json(blog);
+    return res.status(201).json(blog);
   } catch (error) {
     console.log(error.message);
-    res.status(400).json({ message: "something went wrong." });
+    return res.status(400).json({ message: "something went wrong." });
   }
 };
 
@@ -57,7 +73,12 @@ exports.updateBlog = async (req, res) => {
 
 exports.getBlogs = async (req, res) => {
   try {
-    const blogs = await Blog.find().populate("author", "username");
+    const blogs = await BlogPost.find()
+      .populate("author", "username")
+      .populate({
+        path: "content",
+      })
+      .exec();
     res.json(blogs);
   } catch (error) {
     console.log(error.message);

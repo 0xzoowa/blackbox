@@ -10,7 +10,9 @@ const FullPost = ({ blogPosts }) => {
       ([key, value]) => key === "_id" && value === id
     );
   });
-  console.log(post);
+  console.log("blog post", blogPosts);
+  console.log("post", post);
+  console.log("id", id);
 
   if (!post) return <div>Post not found</div>;
 
@@ -23,7 +25,7 @@ const FullPost = ({ blogPosts }) => {
       />
       <Link
         to="/blog"
-        className="mt-8 inline-block text-blue-400 hover:underline"
+        className="mt-8 inline-block text-indigo-600 hover:underline"
       >
         Back to all posts
       </Link>

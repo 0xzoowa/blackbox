@@ -32,7 +32,7 @@ app.use(limiter);
 
 // Routes
 app.use("/api/auth", authRoutes);
-app.use("/api/blogs", protect, authorize("chief"), blogRoutes);
+app.use("/api/blogs", blogRoutes);
 app.use("/api/profiles", profileRoutes);
 
 // Error handling middleware

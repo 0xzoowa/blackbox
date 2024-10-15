@@ -1,4 +1,8 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { MyContext } from "../context/myContext";
+import { useAlert } from "../context/alertProvider";
 
 const ContentBlock = ({ type, content, onChange, onRemove }) => {
   return (
@@ -40,7 +44,10 @@ const ContentBlock = ({ type, content, onChange, onRemove }) => {
 
 const BlogPostEditor = () => {
   const [title, setTitle] = useState("");
-  const [contents, setContents] = useState([{ type: "paragraph", text: "" }]);
+  const [contents, setContents] = useState([]); //{ type: "paragraph", text: "" }
+  const { token, blogPost, setBlogPost } = useContext(MyContext);
+  const navigate = useNavigate();
+  const { successAlert, errorAlert } = useAlert();
 
   const addContentBlock = () => {
     setContents([...contents, { type: "paragraph", text: "" }]);
@@ -58,9 +65,33 @@ const BlogPostEditor = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Here you would typically send the data to your API
-    console.log({ title, contents });
-    // Implement API call here
+    if (contents.length === 0) {
+      errorAlert("Please add at least one content block before submitting.");
+      return;
+    }
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/blogs",
+        {
+          title,
+          contents,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log(response);
+      if (response.status === 201) {
+        successAlert("post created successfully");
+        navigate("/blog");
+      }
+    } catch (error) {
+      errorAlert("error creating post");
+      console.error("Error submitting post:", error);
+    }
   };
 
   return (

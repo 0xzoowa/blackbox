@@ -1,21 +1,21 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { LogIn } from "lucide-react";
 import { MyContext } from "../context/myContext";
 import axios from "axios";
+import { useAlert } from "../context/alertProvider";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { user, setUser } = useContext(MyContext);
-  const { token, setToken } = useContext(MyContext);
-  const { isLoggedIn, setIsLoggedIn } = useContext(MyContext);
+  const { token, setToken, user, setUser, setIsLoggedIn } =
+    useContext(MyContext);
+  const { successAlert, errorAlert } = useAlert();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Implement login logic
     Login();
   };
 
@@ -33,12 +33,14 @@ const Login = () => {
           },
         }
       );
+      successAlert("login successful");
       setToken(response.data.token);
       setUser(response.data.user);
       setIsLoggedIn(true);
       navigate("/blog");
     } catch (error) {
       console.error("Error logging in:", error);
+      errorAlert("error logging in");
     }
   };
 
