@@ -1,10 +1,18 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { MyContext } from "../context/myContext";
 import { useAlert } from "../context/alertProvider";
 
-const ContentBlock = ({ type, content, onChange, onRemove }) => {
+const ContentBlock = ({
+  type,
+  content,
+  onChange,
+  onRemove,
+  index,
+  handleFileChange,
+  fileRef,
+}) => {
   return (
     <div className="mb-4 p-4 border rounded">
       <select
@@ -16,23 +24,35 @@ const ContentBlock = ({ type, content, onChange, onRemove }) => {
         <option value="heading">Heading</option>
         <option value="subheading">Subheading</option>
         <option value="image">Image</option>
+        <option value="audio">Audio</option>
+        <option value="video">Video</option>
         <option value="code">Code</option>
       </select>
-      {type === "image" ? (
+      {["image", "audio", "video"].includes(type) ? (
         <input
           type="file"
-          onChange={(e) => onChange("text", e.target.files[0])}
+          ref={fileRef}
+          onChange={(e) => handleFileChange(index, e)}
           className="mb-2 p-2 border rounded w-full"
+          accept={
+            type === "image"
+              ? "image/*"
+              : type === "audio"
+              ? "audio/*"
+              : "video/*"
+          }
         />
       ) : (
         <textarea
           value={content}
+          name="text"
           onChange={(e) => onChange("text", e.target.value)}
           className="mb-2 p-2 border rounded w-full"
           rows="3"
         />
       )}
       <button
+        type="button"
         onClick={onRemove}
         className=" bg-purple-600 hover:bg-red-500 text-white px-2 py-1 rounded"
       >
@@ -45,51 +65,73 @@ const ContentBlock = ({ type, content, onChange, onRemove }) => {
 const BlogPostEditor = () => {
   const [title, setTitle] = useState("");
   const [contents, setContents] = useState([]); //{ type: "paragraph", text: "" }
-  const { token, blogPost, setBlogPost } = useContext(MyContext);
+  const { token } = useContext(MyContext);
+  const [file, setFile] = useState([]);
+  const fileRefs = useRef([]);
   const navigate = useNavigate();
   const { successAlert, errorAlert } = useAlert();
 
   const addContentBlock = () => {
     setContents([...contents, { type: "paragraph", text: "" }]);
+    setFile([...file, null]);
   };
 
-  const removeContentBlock = (index) => {
+  const removeContentBlock = (index, type) => {
     setContents(contents.filter((_, i) => i !== index));
+
+    setFile(file.filter((_, i) => i !== index));
   };
 
-  const updateContentBlock = (index, field, value) => {
+  const updateContentBlock = (index, field, value, type) => {
     const newContents = [...contents];
     newContents[index][field] = value;
     setContents(newContents);
   };
+  const handleFileChange = (index, event) => {
+    const newFiles = [...file];
+    newFiles[index] = event.target.files[0];
+    setFile(newFiles);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (contents.length === 0) {
       errorAlert("Please add at least one content block before submitting.");
       return;
     }
+
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("contents", JSON.stringify(contents));
+    file.forEach((file, index) => {
+      if (file) {
+        formData.append("media", file);
+      }
+    });
+
+    console.log("form-data", formData.getAll("media"));
+
     try {
       const response = await axios.post(
         "http://localhost:5000/api/blogs",
-        {
-          title,
-          contents,
-        },
+
+        formData,
+
         {
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "multipart/form-data",
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      console.log(response);
+      console.log(response.data);
       if (response.status === 201) {
         successAlert("post created successfully");
         navigate("/blog");
       }
     } catch (error) {
-      errorAlert("error creating post");
+      errorAlert("Error creating post");
       console.error("Error submitting post:", error);
     }
   };
@@ -108,8 +150,14 @@ const BlogPostEditor = () => {
           key={index}
           type={content.type}
           content={content.text}
-          onChange={(field, value) => updateContentBlock(index, field, value)}
-          onRemove={() => removeContentBlock(index)}
+          onChange={(field, value) =>
+            updateContentBlock(index, field, value, content.type)
+          }
+          onRemove={() => removeContentBlock(index, content.type)}
+          setFile={setFile}
+          handleFileChange={handleFileChange}
+          index={index}
+          fileRef={(el) => (fileRefs.current[index] = el)}
         />
       ))}
       <div className="flex flex-col sm:flex-row sm:justify-between items-center space-y-4 sm:space-y-0 sm:space-x-4 mt-6">
@@ -127,19 +175,6 @@ const BlogPostEditor = () => {
           Submit Post
         </button>
       </div>
-      {/* <button
-        type="button"
-        onClick={addContentBlock}
-        className="mb-4 bg-purple-600 text-white px-4 py-2 rounded"
-      >
-        Add Content Block
-      </button>
-      <button
-        type="submit"
-        className="bg-purple-600 text-white px-4 py-2 rounded"
-      >
-        Submit Post
-      </button> */}
     </form>
   );
 };

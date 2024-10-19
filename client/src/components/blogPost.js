@@ -1,6 +1,8 @@
 import React from "react";
 
 const BlogPost = ({ title, content }) => {
+  const baseUrl = process.env.REACT_APP_API_URL;
+  console.log("base", baseUrl);
   return (
     <article className="mb-8">
       <h2 className="text-3xl font-bold mb-4">{title}</h2>
@@ -25,14 +27,15 @@ const BlogPost = ({ title, content }) => {
                   {item.text}
                 </h4>
               );
-            case "attachment":
+            case "image":
               return (
                 <div key={index} className="mb-4">
                   <img
-                    src={item.url}
-                    alt={item.alt || ""}
+                    src={`${baseUrl}/${item.text}`}
+                    alt={item.alt || " "}
                     className="max-w-full h-auto rounded-lg shadow-md"
                   />
+                  {/* todo:image sizing */}
                 </div>
               );
             case "code":

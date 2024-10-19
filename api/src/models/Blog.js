@@ -15,11 +15,19 @@ const contentSchema = new Schema(
     blogId: { type: mongoose.Types.ObjectId, ref: "Blog", required: true },
     type: {
       type: String,
-      enum: ["paragraph", "heading", "subheading", "code", "attachment"],
+      enum: [
+        "paragraph",
+        "heading",
+        "subheading",
+        "code",
+        "image",
+        "audio",
+        "video",
+      ],
       default: "paragraph",
       required: true,
     },
-    text: { type: String, required: true }, //if content type is attachment, this will be a url
+    text: { type: String, required: true }, //if content type is attachment, this will be a url or path
   },
   {
     timestamps: true,

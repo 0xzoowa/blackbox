@@ -186,6 +186,7 @@ const Blog = ({ blogPosts }) => {
                   ) : (
                     <div className="flex-grow max-w-3xl">
                       <p className="text-gray-700 dark:text-gray-300 mb-4">
+                        {/* add checks to handle empty content array */}
                         {post.content[0].text
                           ? post.content[0].text.substring(0, 100)
                           : ""}
