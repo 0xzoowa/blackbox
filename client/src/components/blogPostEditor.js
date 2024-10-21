@@ -1,8 +1,9 @@
-import React, { useContext, useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useContext, useState, useRef, useEffect } from "react";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import axios from "axios";
 import { MyContext } from "../context/myContext";
 import { useAlert } from "../context/alertProvider";
+import { useGlobalState } from "../context/globalState";
 
 const ContentBlock = ({
   type,
@@ -65,11 +66,30 @@ const ContentBlock = ({
 const BlogPostEditor = () => {
   const [title, setTitle] = useState("");
   const [contents, setContents] = useState([]); //{ type: "paragraph", text: "" }
-  const { token } = useContext(MyContext);
+  const { token } = useGlobalState();
   const [file, setFile] = useState([]);
   const fileRefs = useRef([]);
   const navigate = useNavigate();
   const { successAlert, errorAlert } = useAlert();
+  const { id } = useParams();
+  const location = useLocation();
+  const [isEditing, setIsEditing] = useState(false);
+
+  useEffect(() => {
+    if (id && location.state && location.state.post) {
+      const { title, content } = location.state.post;
+      setTitle(title);
+      setContents(content);
+
+      setFile(file);
+      setIsEditing(true);
+      /**
+       * pending functionalities
+       * edit post
+       * handle gif, video and audio media formats for upload
+       */
+    }
+  }, [id, location.state]);
 
   const addContentBlock = () => {
     setContents([...contents, { type: "paragraph", text: "" }]);
@@ -113,25 +133,39 @@ const BlogPostEditor = () => {
     console.log("form-data", formData.getAll("media"));
 
     try {
-      const response = await axios.post(
-        "http://localhost:5000/api/blogs",
-
-        formData,
-
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      let response;
+      if (isEditing) {
+        response = await axios.put(
+          `http://localhost:5000/api/blogs/${id}`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } else {
+        response = await axios.post(
+          "http://localhost:5000/api/blogs",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      }
       console.log(response.data);
-      if (response.status === 201) {
-        successAlert("post created successfully");
+      if (response.status === 200 || response.status === 201) {
+        successAlert(
+          isEditing ? "Post updated successfully" : "Post created successfully"
+        );
         navigate("/blog");
       }
     } catch (error) {
-      errorAlert("Error creating post");
+      errorAlert(isEditing ? "Error updating post" : "Error creating post");
       console.error("Error submitting post:", error);
     }
   };

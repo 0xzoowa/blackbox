@@ -28,6 +28,9 @@ const contentSchema = new Schema(
       required: true,
     },
     text: { type: String, required: true }, //if content type is attachment, this will be a url or path
+    archived: { type: Boolean, default: false },
+    deleted: { type: Boolean, default: false },
+    private: { type: Boolean, default: false },
   },
   {
     timestamps: true,

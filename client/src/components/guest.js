@@ -1,10 +1,10 @@
 import React, { useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { MyContext } from "../context/myContext";
+import { useGlobalState } from "../context/globalState";
 const Guest = () => {
   const navigate = useNavigate();
-  const { user, setUser } = useContext(MyContext);
-  const { isLoggedIn, setIsLoggedIn } = useContext(MyContext);
+  const { setIsLoggedIn, setUser } = useGlobalState();
 
   useEffect(() => {
     setIsLoggedIn(true);

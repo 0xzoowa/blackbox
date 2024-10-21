@@ -2,9 +2,10 @@ import { React, useContext } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { Sun, Moon, Home } from "lucide-react";
 import { MyContext } from "../context/myContext";
+import { useGlobalState } from "../context/globalState";
 
 const Navbar = ({ darkMode, toggleDarkMode }) => {
-  const { isLoggedIn, setIsLoggedIn } = useContext(MyContext);
+  const { isLoggedIn } = useGlobalState();
   return (
     <nav className="fixed top-0 left-0 right-0 bg-gray-800 shadow-lg z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

@@ -4,11 +4,11 @@ import { LogIn } from "lucide-react";
 import { MyContext } from "../context/myContext";
 import axios from "axios";
 import { useAlert } from "../context/alertProvider";
+import { useGlobalState } from "../context/globalState";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { token, setToken, user, setUser, setIsLoggedIn } =
-    useContext(MyContext);
+  const { setToken, setUser, setIsLoggedIn } = useGlobalState();
   const { successAlert, errorAlert } = useAlert();
 
   const [email, setEmail] = useState("");
@@ -37,6 +37,9 @@ const Login = () => {
       setToken(response.data.token);
       setUser(response.data.user);
       setIsLoggedIn(true);
+      localStorage.setItem("isLoggedIn", "true");
+      localStorage.setItem("token", response.data.token);
+
       navigate("/blog");
     } catch (error) {
       console.error("Error logging in:", error);

@@ -1,7 +1,15 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useGlobalState } from "../context/globalState";
 
 const Home = () => {
+  const { isLoggedIn, logout } = useGlobalState();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
   return (
     <div className="flex flex-col items-center min-h-[calc(100vh-64px-56px)] p-12">
       <div className="flex flex-col items-center justify-center flex-grow  p-6">
@@ -12,12 +20,22 @@ const Home = () => {
           <Link to="/about">what is blackbox?</Link>
         </p> */}
         <div className="space-x-4">
-          <Link
-            to="/login"
-            className="px-6 py-2 text-purple-600 border border-purple-600 rounded-lg hover:bg-purple-50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50"
-          >
-            Login
-          </Link>
+          {!isLoggedIn ? (
+            <Link
+              to="/login"
+              className="px-6 py-2 text-purple-600 border border-purple-600 rounded-lg hover:bg-purple-50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50"
+            >
+              Login
+            </Link>
+          ) : (
+            <button
+              onClick={handleLogout}
+              className="px-6 py-2 text-purple-600 border border-purple-600 rounded-lg hover:bg-purple-50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50"
+            >
+              Logout
+            </button>
+          )}
+
           <Link
             to="/guest"
             className="px-6 py-2 text-white bg-purple-600 rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50"

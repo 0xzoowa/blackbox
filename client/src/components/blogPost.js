@@ -33,9 +33,9 @@ const BlogPost = ({ title, content }) => {
                   <img
                     src={`${baseUrl}/${item.text}`}
                     alt={item.alt || " "}
-                    className="max-w-full h-auto rounded-lg shadow-md"
+                    // className="max-w-full h-auto rounded-lg shadow-md"
+                    className="max-w-[500px] max-h-[400px] w-auto h-auto object-contain rounded-lg shadow-md"
                   />
-                  {/* todo:image sizing */}
                 </div>
               );
             case "code":

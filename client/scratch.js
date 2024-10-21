@@ -783,5 +783,41 @@ class Program
       createdAt: "2024-09-23T11:50:00Z",
     },
   ]; 
+   // const user = await User.findById(req.user._id);
+    // if (!user) {
+    //   return res
+    //     .status(404)
+    //     .json({ success: false, message: "User not found" });
+    // }
+    // if (user.role === "chief") {
+    //   blog = await BlogPost.findById(id)
+    //     .populate("author", "username")
+    //     .populate({
+    //       path: "content",
+    //     })
+    //     .exec();
+    // } else {
+    //   blog = await BlogPost.findOne({ _id: id, deleted: false })
+    //     .populate("author", "username")
+    //     .populate({
+    //       path: "content",
+    //     })
+    //     .exec();
+    // }
+      useEffect(() => {
+    console.log("blog post from global", blogPost);
+    // Load state from localStorage
+    if (user) {
+      localStorage.setItem("isLoggedIn", "true");
+      localStorage.setItem("token", token);
 
+      if (user.role === "chief") {
+        setIsAdmin(true);
+        localStorage.setItem("isAdmin", "true");
+      } else {
+        setIsAdmin(false);
+        localStorage.setItem("isAdmin", "false");
+      }
+    }
+  }, [user, token, isAdmin, isLoggedIn, setBlogPost]);
  */

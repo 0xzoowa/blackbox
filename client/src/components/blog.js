@@ -1,57 +1,24 @@
 import React, { useState, useEffect, useContext } from "react";
-import BlogPost from "./blogPost";
+import { useNavigate } from "react-router-dom";
 import { PlusCircle, FileX, UserX } from "lucide-react";
-import BlogPostForm from "./BlogPostForm";
 import BlogPostEditor from "./blogPostEditor";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { MyContext } from "../context/myContext";
+import { useAlert } from "../context/alertProvider";
+import { useGlobalState } from "../context/globalState";
 
 const Blog = ({ blogPosts }) => {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const [isFormVisible, setIsFormVisible] = useState(false);
-  const [editingPost, setEditingPost] = useState(null);
   const [expandedPost, setExpandedPost] = useState(null);
-  const { isLoggedIn, setBlogPost, token, isAdmin } = useContext(MyContext);
+  const { isLoggedIn, setBlogPost, token, isAdmin } = useGlobalState();
+  const { successAlert, errorAlert } = useAlert();
+  const navigate = useNavigate();
 
-  const handleCreatePost = async (postData) => {
-    try {
-      const response = await axios.post(
-        "http://localhost:5000/api/blog",
-        // {
-        //   email,
-        //   password,
-        // },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-    } catch (error) {
-      console.error("Error creating blog post:", error);
-    }
-  };
-  const handleUpdatePost = async (postData) => {
-    try {
-      const response = await fetch(
-        `http://localhost:5000/api/blog/${editingPost._id}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(postData),
-        }
-      );
-      if (response.ok) {
-        // fetchBlogPosts();
-        setEditingPost(null);
-        setIsFormVisible(false);
-      }
-    } catch (error) {
-      console.error("Error updating blog post:", error);
-    }
+  const handleEditPost = (post) => {
+    navigate(`/blog/edit/${post._id}`, { state: { post } });
+    // console.log("state post", post);
   };
 
   const fetchBlogPost = async () => {
@@ -65,73 +32,73 @@ const Blog = ({ blogPosts }) => {
           },
         }
       );
-      console.log(response.data);
-      return response.data;
+      // console.log("data blog", response.data);
+      return response.data.data;
     } catch (error) {
       console.error("Error fetching blog posts:", error);
       throw error;
     }
   };
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const blogs = await fetchBlogPost();
-        if (blogs) {
-          // Transform the data to match the expected format
-          const transformedData = blogs.map((post) => ({
-            _id: post._id,
-            title: post.title,
-            content: post.content.map((contentId) => ({
-              type: contentId.type,
-              text: contentId.text,
-            })), // You might need to fetch actual content
-            createdAt: post.createdAt,
-            // Add other fields as needed
-          }));
-          setBlogPost(transformedData);
-        }
-      } catch (error) {
-        setError(error.message);
-      } finally {
-        setLoading(false);
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const blogs = await fetchBlogPost();
+      if (blogs) {
+        // Transform the data to match expected format
+        const transformedData = blogs.map((post) => ({
+          _id: post._id,
+          title: post.title,
+          content: post.content.map((contentId) => ({
+            type: contentId.type,
+            text: contentId.text,
+          })),
+          createdAt: post.createdAt,
+        }));
+        setBlogPost(transformedData);
       }
-    };
+    } catch (error) {
+      console.log(error.message);
+      errorAlert(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchData();
   }, [token, setBlogPost]);
 
   const handleDeletePost = async (postId) => {
-    if (window.confirm("Are you sure you want to delete this post?")) {
-      try {
-        const response = await fetch(
-          `http://localhost:5000/api/blog/${postId}`,
-          {
-            method: "DELETE",
-          }
-        );
-        if (response.ok) {
-          // fetchBlogPosts();
-        }
-      } catch (error) {
-        console.error("Error deleting blog post:", error);
-      }
+    try {
+      await axios.delete(`http://localhost:5000/api/blogs/${postId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      successAlert("post deleted successfully");
+      fetchData();
+    } catch (error) {
+      console.log(error.message);
+      errorAlert("Error deleting blog post");
     }
   };
 
   const handleArchivePost = async (postId) => {
     try {
-      const response = await fetch(
-        `http://localhost:5000/api/blog/${postId}/archive`,
+      await axios.put(
+        `http://localhost:5000/api/blogs/${postId}/archive`,
+        {},
         {
-          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
-      if (response.ok) {
-        // fetchBlogPosts();
-      }
+      successAlert("post archived successfully");
+      fetchData();
     } catch (error) {
-      console.error("Error archiving blog post:", error);
+      console.log(error.message);
+      errorAlert("Error archiving blog post");
     }
   };
 
@@ -139,23 +106,12 @@ const Blog = ({ blogPosts }) => {
     setExpandedPost(expandedPost === postId ? null : postId);
   };
   if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
 
   return (
     <>
       {isLoggedIn ? (
         <div className="container mx-auto p-6 max-w-3xl min-h-[calc(100vh-64px-56px)]">
-          {isFormVisible && (
-            // <BlogPostForm
-            //   post={editingPost}
-            //   onSubmit={editingPost ? handleUpdatePost : handleCreatePost}
-            //   onCancel={() => {
-            //     setIsFormVisible(false);
-            //     setEditingPost(null);
-            //   }}
-            // />
-            <BlogPostEditor />
-          )}
+          {isFormVisible && <BlogPostEditor />}
           {!isFormVisible && blogPosts.length > 0
             ? blogPosts.map((post) => (
                 <article
@@ -198,8 +154,7 @@ const Blog = ({ blogPosts }) => {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          setEditingPost(post);
-                          setIsFormVisible(true);
+                          handleEditPost(post);
                         }}
                         className="px-2 py-1 border hover:bg-indigo-600  hover:text-white border-gray-300 dark:border-gray-600 rounded-md  focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600"
                       >

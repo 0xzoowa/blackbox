@@ -1,15 +1,20 @@
 const express = require("express");
-const { body } = require("express-validator");
 const { protect, authorize } = require("../middleware/auth");
 const {
   createBlog,
   getBlogs,
+  getBlog,
   updateBlog,
   deleteBlog,
+  archiveBlog,
+  deletedBlogPost,
+  archivedBlogPost,
 } = require("../controllers/blogController");
 const upload = require("../middleware/upload");
-const validate = require("../middleware/validate");
 const router = express.Router();
+
+router.get("/deleted", protect, authorize("chief"), deletedBlogPost);
+router.get("/archived", protect, authorize("chief"), archivedBlogPost);
 
 router.post(
   "/",
@@ -21,6 +26,8 @@ router.post(
 
 router.get("/", getBlogs);
 
+router.get("/:id", getBlog);
+
 router.put(
   "/:id",
   protect,
@@ -28,6 +35,8 @@ router.put(
   upload.array("media", 5),
   updateBlog
 );
+
+router.put("/:id/archive", protect, authorize("chief"), archiveBlog);
 
 router.delete("/:id", protect, authorize("chief"), deleteBlog);
 
