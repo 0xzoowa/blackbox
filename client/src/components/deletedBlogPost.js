@@ -16,7 +16,8 @@ const DeletedBlogPost = () => {
   const navigate = useNavigate();
   const gt = localStorage.getItem("token");
 
-  console.log("token ", gt);
+  console.log(" local storage token ", gt);
+  console.log(" local storage loggedin ", isLoggedIn);
 
   const fetchDeletedPosts = async () => {
     try {

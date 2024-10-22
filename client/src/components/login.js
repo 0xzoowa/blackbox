@@ -8,7 +8,16 @@ import { useGlobalState } from "../context/globalState";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { setToken, setUser, setIsLoggedIn } = useGlobalState();
+  const {
+    setToken,
+    setUser,
+    setIsLoggedIn,
+    isLoggedIn,
+    token,
+    user,
+    setIsAdmin,
+    isAdmin,
+  } = useGlobalState();
   const { successAlert, errorAlert } = useAlert();
 
   const [email, setEmail] = useState("");
@@ -34,11 +43,9 @@ const Login = () => {
         }
       );
       successAlert("login successful");
+      setIsLoggedIn(true);
       setToken(response.data.token);
       setUser(response.data.user);
-      setIsLoggedIn(true);
-      localStorage.setItem("isLoggedIn", "true");
-      localStorage.setItem("token", response.data.token);
 
       navigate("/blog");
     } catch (error) {
