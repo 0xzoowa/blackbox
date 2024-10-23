@@ -1,7 +1,6 @@
 import { React, useContext } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { Sun, Moon, Home } from "lucide-react";
-import { MyContext } from "../context/myContext";
 import { useGlobalState } from "../context/globalState";
 
 const Navbar = ({ darkMode, toggleDarkMode }) => {

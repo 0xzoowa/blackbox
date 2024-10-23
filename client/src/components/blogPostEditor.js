@@ -1,7 +1,6 @@
 import React, { useContext, useState, useRef, useEffect } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import axios from "axios";
-import { MyContext } from "../context/myContext";
 import { useAlert } from "../context/alertProvider";
 import { useGlobalState } from "../context/globalState";
 

@@ -1,9 +1,6 @@
-import React, { useState, useEffect, useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 import { FileX, UserX } from "lucide-react";
 import axios from "axios";
-import { Link } from "react-router-dom";
-import { MyContext } from "../context/myContext";
 import { useAlert } from "../context/alertProvider";
 import { useGlobalState } from "../context/globalState";
 
@@ -13,7 +10,6 @@ const ArchivedBlogPost = () => {
   const [expandedPost, setExpandedPost] = useState(null);
   const { isLoggedIn, token, isAdmin } = useGlobalState();
   const { successAlert, errorAlert } = useAlert();
-  const navigate = useNavigate();
 
   const fetchArchivedPosts = async () => {
     try {

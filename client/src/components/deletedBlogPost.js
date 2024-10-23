@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { FileX, UserX } from "lucide-react";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import { MyContext } from "../context/myContext";
 import { useAlert } from "../context/alertProvider";
 import { useGlobalState } from "../context/globalState";
 

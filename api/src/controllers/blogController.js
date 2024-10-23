@@ -170,38 +170,10 @@ exports.getBlog = async (req, res) => {
     res.status(400).json({ message: "something went wrong." });
   }
 };
+
 exports.getBlogs = async (req, res) => {
   try {
     const blogs = await BlogPost.find({ deleted: false, archived: false })
-      .populate("author", "username")
-      .populate({
-        path: "content",
-      })
-      .exec();
-    return res.status(200).json({ success: true, data: blogs });
-  } catch (error) {
-    console.log(error.message);
-    res.status(400).json({ message: "something went wrong." });
-  }
-};
-
-exports.deletedBlogPost = async (req, res) => {
-  try {
-    const blogs = await BlogPost.find({ deleted: true })
-      .populate("author", "username")
-      .populate({
-        path: "content",
-      })
-      .exec();
-    return res.status(200).json({ success: true, data: blogs });
-  } catch (error) {
-    console.log(error.message);
-    res.status(400).json({ message: "something went wrong." });
-  }
-};
-exports.archivedBlogPost = async (req, res) => {
-  try {
-    const blogs = await BlogPost.find({ archived: true })
       .populate("author", "username")
       .populate({
         path: "content",
@@ -282,7 +254,117 @@ exports.archiveBlog = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: "Blog post and associated content have been soft deleted",
+      message:
+        "Blog post and associated content have been archived successfully",
+    });
+  } catch (error) {
+    console.log(error.message);
+    return res
+      .status(400)
+      .json({ success: false, message: "Something went wrong." });
+  }
+};
+
+exports.deletedBlogPost = async (req, res) => {
+  try {
+    const blogs = await BlogPost.find({ deleted: true })
+      .populate("author", "username")
+      .populate({
+        path: "content",
+      })
+      .exec();
+    return res.status(200).json({ success: true, data: blogs });
+  } catch (error) {
+    console.log(error.message);
+    res.status(400).json({ message: "something went wrong." });
+  }
+};
+
+exports.archivedBlogPost = async (req, res) => {
+  try {
+    const blogs = await BlogPost.find({ archived: true })
+      .populate("author", "username")
+      .populate({
+        path: "content",
+      })
+      .exec();
+    return res.status(200).json({ success: true, data: blogs });
+  } catch (error) {
+    console.log(error.message);
+    res.status(400).json({ message: "something went wrong." });
+  }
+};
+
+exports.restoreBlogPost = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Find the blog post
+    const blog = await BlogPost.findById(id);
+    if (!blog) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Blog post not found" });
+    }
+
+    // Check if the user is the author of the blog post
+    if (blog.author.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not authorized to delete this blog post",
+      });
+    }
+
+    // Soft delete the blog post
+    blog.deleted = false;
+    await blog.save();
+
+    // Soft delete all associated content
+    await Content.updateMany({ blogId: blog._id }, { deleted: false });
+
+    return res.status(200).json({
+      success: true,
+      message:
+        "Blog post and associated content have been restored successfully",
+    });
+  } catch (error) {
+    console.log(error.message);
+    return res
+      .status(400)
+      .json({ success: false, message: "Something went wrong." });
+  }
+};
+
+exports.unarchiveBlogPost = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Find the blog post
+    const blog = await BlogPost.findById(id);
+    if (!blog) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Blog post not found" });
+    }
+
+    // Check if the user is the author of the blog post
+    if (blog.author.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not authorized to delete this blog post",
+      });
+    }
+
+    // archive the blog post
+    blog.archived = false;
+    await blog.save();
+
+    // archive all associated content
+    await Content.updateMany({ blogId: blog._id }, { archived: false });
+
+    return res.status(200).json({
+      success: true,
+      message: "Blog post and associated content have been unarchived",
     });
   } catch (error) {
     console.log(error.message);

@@ -1,7 +1,6 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { LogIn } from "lucide-react";
-import { MyContext } from "../context/myContext";
 import axios from "axios";
 import { useAlert } from "../context/alertProvider";
 import { useGlobalState } from "../context/globalState";

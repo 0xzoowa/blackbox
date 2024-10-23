@@ -4,7 +4,6 @@ import { PlusCircle, FileX, UserX } from "lucide-react";
 import BlogPostEditor from "./blogPostEditor";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import { MyContext } from "../context/myContext";
 import { useAlert } from "../context/alertProvider";
 import { useGlobalState } from "../context/globalState";
 

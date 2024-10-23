@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import NavBar from "./components/navbar";
 import Home from "./components/home";
@@ -8,8 +8,6 @@ import Footer from "./components/footer";
 import Login from "./components/login";
 import FullPost from "./components/fullPostView";
 import Guest from "./components/guest";
-import LogOut from "./components/logout";
-import { MyContext } from "./context/myContext";
 import BlogPostEditor from "./components/blogPostEditor";
 import { AlertProvider } from "./context/alertProvider";
 import ArchivedBlogPost from "./components/archivedBlogPost";
@@ -46,7 +44,6 @@ const AppContent = () => {
           <Route path="/blog/create" element={<BlogPostEditor />} />
           <Route path="/blog/edit/:id" element={<BlogPostEditor />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/logout" element={<LogOut />} />
           <Route path="/post/:id" element={<FullPost blogPosts={blogPost} />} />
           <Route path="/guest" element={<Guest />} />
         </Routes>

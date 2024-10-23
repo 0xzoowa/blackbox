@@ -1,6 +1,5 @@
 import React, { useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { MyContext } from "../context/myContext";
 import { useGlobalState } from "../context/globalState";
 import { useAlert } from "../context/alertProvider";
 
