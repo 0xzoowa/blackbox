@@ -5,12 +5,13 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { MyContext } from "../context/myContext";
 import { useAlert } from "../context/alertProvider";
+import { useGlobalState } from "../context/globalState";
 
 const ArchivedBlogPost = () => {
   const [loading, setLoading] = useState(false);
   const [archivedPosts, setArchivedPosts] = useState([]);
   const [expandedPost, setExpandedPost] = useState(null);
-  const { isLoggedIn, token, isAdmin } = useContext(MyContext);
+  const { isLoggedIn, token, isAdmin } = useGlobalState();
   const { successAlert, errorAlert } = useAlert();
   const navigate = useNavigate();
 

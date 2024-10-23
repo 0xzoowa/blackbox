@@ -2,17 +2,20 @@ import React, { useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { MyContext } from "../context/myContext";
 import { useGlobalState } from "../context/globalState";
+import { useAlert } from "../context/alertProvider";
+
 const Guest = () => {
   const navigate = useNavigate();
-  const { setIsLoggedIn, setUser } = useGlobalState();
+  const { guestLogin } = useGlobalState();
+  const { successAlert } = useAlert();
 
   useEffect(() => {
-    setIsLoggedIn(true);
-    setUser("random_user");
+    guestLogin();
+    successAlert("Logged in as guest");
+    navigate("/blog");
   }, []);
 
-  navigate("/blog");
-  return <></>;
+  return null;
 };
 
 export default Guest;

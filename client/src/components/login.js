@@ -9,6 +9,7 @@ import { useGlobalState } from "../context/globalState";
 const Login = () => {
   const navigate = useNavigate();
   const {
+    login,
     setToken,
     setUser,
     setIsLoggedIn,
@@ -42,10 +43,12 @@ const Login = () => {
           },
         }
       );
-      successAlert("login successful");
-      setIsLoggedIn(true);
-      setToken(response.data.token);
-      setUser(response.data.user);
+      login(response.data.user, response.data.token);
+      successAlert("Login successful");
+      // successAlert("login successful");
+      // setIsLoggedIn(true);
+      // setToken(response.data.token);
+      // setUser(response.data.user);
 
       navigate("/blog");
     } catch (error) {
