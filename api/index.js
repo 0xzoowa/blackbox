@@ -37,7 +37,9 @@ app.use("/api/profiles", profileRoutes);
 // Error handling middleware
 app.use(errorHandler);
 
-app.get("/", async (req, res) => {res.status(200).json(sucess: true, message: "This is blackbox api by 0xzoowa...")})
+app.get("/", async (req, res) => {
+  res.status(200).json({sucess: true, message: "This is blackbox api by 0xzoowa..."});
+})
 
 app.listen(PORT, () => {
   connectDB();
