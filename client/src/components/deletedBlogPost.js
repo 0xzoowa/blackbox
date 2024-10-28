@@ -10,17 +10,10 @@ const DeletedBlogPost = () => {
   const [loading, setLoading] = useState(false);
   const [deletedPosts, setDeletedPosts] = useState([]);
   const [expandedPost, setExpandedPost] = useState(null);
-  const { isLoggedIn, token, isAdmin } = useGlobalState();
+  const { isLoggedIn, token, isAdmin, baseUrl } = useGlobalState();
   const { successAlert, errorAlert } = useAlert();
   const navigate = useNavigate();
   const gt = localStorage.getItem("token");
-
-  let baseUrl;
-
-  if (process.env.REACT_APP_ENVIRONMENT === "DEVELOPMENT") {
-    baseUrl = process.env.REACT_APP_API_URL_DEVELOPMENT;
-  }
-  baseUrl = process.env.REACT_APP_API_URL_PRODUCTION;
 
   console.log(" local storage token ", gt);
   console.log(" local storage loggedin ", isLoggedIn);

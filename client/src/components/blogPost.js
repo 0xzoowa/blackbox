@@ -1,12 +1,8 @@
 import React from "react";
+import { useGlobalState } from "../context/globalState";
 
 const BlogPost = ({ title, content }) => {
-  let baseUrl;
-
-  if (process.env.REACT_APP_ENVIRONMENT === "DEVELOPMENT") {
-    baseUrl = process.env.REACT_APP_API_URL_DEVELOPMENT;
-  }
-  baseUrl = process.env.REACT_APP_API_URL_PRODUCTION;
+  const { baseUrl } = useGlobalState();
 
   console.log("base", baseUrl);
   return (

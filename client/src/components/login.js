@@ -7,28 +7,11 @@ import { useGlobalState } from "../context/globalState";
 
 const Login = () => {
   const navigate = useNavigate();
-  const {
-    login,
-    setToken,
-    setUser,
-    setIsLoggedIn,
-    isLoggedIn,
-    token,
-    user,
-    setIsAdmin,
-    isAdmin,
-  } = useGlobalState();
+  const { login, baseUrl } = useGlobalState();
   const { successAlert, errorAlert } = useAlert();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
-  let baseUrl;
-
-  if (process.env.REACT_APP_ENVIRONMENT === "DEVELOPMENT") {
-    baseUrl = process.env.REACT_APP_API_URL_DEVELOPMENT;
-  }
-  baseUrl = process.env.REACT_APP_API_URL_PRODUCTION;
 
   const handleSubmit = (e) => {
     e.preventDefault();

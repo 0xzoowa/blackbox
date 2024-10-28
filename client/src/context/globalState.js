@@ -9,6 +9,9 @@ export const GlobalStateProvider = ({ children }) => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [blogPost, setBlogPost] = useState([]);
   const [randomUser, setRandomUser] = useState({ role: "random" });
+  const [baseUrl, setBaseUrl] = useState(
+    process.env.REACT_APP_API_URL_PRODUCTION
+  );
 
   // Initial load from localStorage
   useEffect(() => {
@@ -100,6 +103,7 @@ export const GlobalStateProvider = ({ children }) => {
         login,
         logout,
         guestLogin,
+        baseUrl,
       }}
     >
       {children}

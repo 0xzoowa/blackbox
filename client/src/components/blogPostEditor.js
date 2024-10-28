@@ -65,7 +65,7 @@ const ContentBlock = ({
 const BlogPostEditor = () => {
   const [title, setTitle] = useState("");
   const [contents, setContents] = useState([]); //{ type: "paragraph", text: "" }
-  const { token } = useGlobalState();
+  const { token, baseUrl } = useGlobalState();
   const [file, setFile] = useState([]);
   const fileRefs = useRef([]);
   const navigate = useNavigate();
@@ -73,12 +73,6 @@ const BlogPostEditor = () => {
   const { id } = useParams();
   const location = useLocation();
   const [isEditing, setIsEditing] = useState(false);
-
-  let baseUrl;
-  if (process.env.REACT_APP_ENVIRONMENT === "DEVELOPMENT") {
-    baseUrl = process.env.REACT_APP_API_URL_DEVELOPMENT;
-  }
-  baseUrl = process.env.REACT_APP_API_URL_PRODUCTION;
 
   useEffect(() => {
     if (id && location.state && location.state.post) {

@@ -11,15 +11,9 @@ const Blog = ({ blogPosts }) => {
   const [loading, setLoading] = useState(false);
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [expandedPost, setExpandedPost] = useState(null);
-  const { isLoggedIn, setBlogPost, token, isAdmin } = useGlobalState();
+  const { isLoggedIn, setBlogPost, token, isAdmin, baseUrl } = useGlobalState();
   const { successAlert, errorAlert } = useAlert();
   const navigate = useNavigate();
-  let baseUrl;
-
-  if (process.env.REACT_APP_ENVIRONMENT === "DEVELOPMENT") {
-    baseUrl = process.env.REACT_APP_API_URL_DEVELOPMENT;
-  }
-  baseUrl = process.env.REACT_APP_API_URL_PRODUCTION;
 
   //edit post is non functional at the moment
   const handleEditPost = (post) => {

@@ -8,15 +8,8 @@ const ArchivedBlogPost = () => {
   const [loading, setLoading] = useState(false);
   const [archivedPosts, setArchivedPosts] = useState([]);
   const [expandedPost, setExpandedPost] = useState(null);
-  const { isLoggedIn, token, isAdmin } = useGlobalState();
+  const { isLoggedIn, token, isAdmin, baseUrl } = useGlobalState();
   const { successAlert, errorAlert } = useAlert();
-
-  let baseUrl;
-
-  if (process.env.REACT_APP_ENVIRONMENT === "DEVELOPMENT") {
-    baseUrl = process.env.REACT_APP_API_URL_DEVELOPMENT;
-  }
-  baseUrl = process.env.REACT_APP_API_URL_PRODUCTION;
 
   const fetchArchivedPosts = async () => {
     try {
