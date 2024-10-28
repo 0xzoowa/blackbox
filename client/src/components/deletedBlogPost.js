@@ -15,21 +15,25 @@ const DeletedBlogPost = () => {
   const navigate = useNavigate();
   const gt = localStorage.getItem("token");
 
+  let baseUrl;
+
+  if (process.env.REACT_APP_ENVIRONMENT === "DEVELOPMENT") {
+    baseUrl = process.env.REACT_APP_API_URL_DEVELOPMENT;
+  }
+  baseUrl = process.env.REACT_APP_API_URL_PRODUCTION;
+
   console.log(" local storage token ", gt);
   console.log(" local storage loggedin ", isLoggedIn);
 
   const fetchDeletedPosts = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(
-        "http://localhost:5000/api/blogs/deleted",
-        {
-          headers: {
-            Authorization: `Bearer ${gt}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await axios.get(`${baseUrl}/api/blogs/deleted`, {
+        headers: {
+          Authorization: `Bearer ${gt}`,
+          "Content-Type": "application/json",
+        },
+      });
       setDeletedPosts(response.data.data);
       console.log("dp", response.data.data);
     } catch (error) {
@@ -49,7 +53,7 @@ const DeletedBlogPost = () => {
   const handleRestorePost = async (postId) => {
     try {
       await axios.put(
-        `http://localhost:5000/api/blogs/${postId}/restore`,
+        `${baseUrl}/api/blogs/${postId}/restore`,
         {},
         {
           headers: {

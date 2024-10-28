@@ -14,7 +14,14 @@ const Blog = ({ blogPosts }) => {
   const { isLoggedIn, setBlogPost, token, isAdmin } = useGlobalState();
   const { successAlert, errorAlert } = useAlert();
   const navigate = useNavigate();
+  let baseUrl;
 
+  if (process.env.REACT_APP_ENVIRONMENT === "DEVELOPMENT") {
+    baseUrl = process.env.REACT_APP_API_URL_DEVELOPMENT;
+  }
+  baseUrl = process.env.REACT_APP_API_URL_PRODUCTION;
+
+  //edit post is non functional at the moment
   const handleEditPost = (post) => {
     navigate(`/blog/edit/${post._id}`, { state: { post } });
     // console.log("state post", post);
@@ -22,8 +29,9 @@ const Blog = ({ blogPosts }) => {
 
   const fetchBlogPost = async () => {
     try {
+      console.log("base", baseUrl);
       const response = await axios.get(
-        "http://localhost:5000/api/blogs",
+        `${baseUrl}/api/blogs`,
 
         {
           headers: {
@@ -69,7 +77,7 @@ const Blog = ({ blogPosts }) => {
 
   const handleDeletePost = async (postId) => {
     try {
-      await axios.delete(`http://localhost:5000/api/blogs/${postId}`, {
+      await axios.delete(`${baseUrl}/api/blogs/${postId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -85,7 +93,7 @@ const Blog = ({ blogPosts }) => {
   const handleArchivePost = async (postId) => {
     try {
       await axios.put(
-        `http://localhost:5000/api/blogs/${postId}/archive`,
+        `${baseUrl}/api/blogs/${postId}/archive`,
         {},
         {
           headers: {

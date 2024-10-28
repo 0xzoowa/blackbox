@@ -1,7 +1,7 @@
 import React from "react";
 
 const BlogPost = ({ title, content }) => {
-  const baseUrl = process.env.REACT_APP_API_URL;
+  const baseUrl = process.env.REACT_APP_API_URL_PRODUCTION;
   console.log("base", baseUrl);
   return (
     <article className="mb-8">

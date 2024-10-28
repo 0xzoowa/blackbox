@@ -74,6 +74,12 @@ const BlogPostEditor = () => {
   const location = useLocation();
   const [isEditing, setIsEditing] = useState(false);
 
+  let baseUrl;
+  if (process.env.REACT_APP_ENVIRONMENT === "DEVELOPMENT") {
+    baseUrl = process.env.REACT_APP_API_URL_DEVELOPMENT;
+  }
+  baseUrl = process.env.REACT_APP_API_URL_PRODUCTION;
+
   useEffect(() => {
     if (id && location.state && location.state.post) {
       const { title, content } = location.state.post;
@@ -134,27 +140,19 @@ const BlogPostEditor = () => {
     try {
       let response;
       if (isEditing) {
-        response = await axios.put(
-          `http://localhost:5000/api/blogs/${id}`,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        response = await axios.put(`${baseUrl}/api/blogs/${id}`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
+        });
       } else {
-        response = await axios.post(
-          "http://localhost:5000/api/blogs",
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        response = await axios.post(`${baseUrl}/api/blogs`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
+        });
       }
       console.log(response.data);
       if (response.status === 200 || response.status === 201) {

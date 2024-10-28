@@ -11,18 +11,22 @@ const ArchivedBlogPost = () => {
   const { isLoggedIn, token, isAdmin } = useGlobalState();
   const { successAlert, errorAlert } = useAlert();
 
+  let baseUrl;
+
+  if (process.env.REACT_APP_ENVIRONMENT === "DEVELOPMENT") {
+    baseUrl = process.env.REACT_APP_API_URL_DEVELOPMENT;
+  }
+  baseUrl = process.env.REACT_APP_API_URL_PRODUCTION;
+
   const fetchArchivedPosts = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(
-        "http://localhost:5000/api/blogs/archived",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await axios.get(`${baseUrl}/api/blogs/archived`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
       setArchivedPosts(response.data.data);
     } catch (error) {
       console.error("Error fetching archived posts:", error);
@@ -41,7 +45,7 @@ const ArchivedBlogPost = () => {
   const handleUnarchivePost = async (postId) => {
     try {
       await axios.put(
-        `http://localhost:5000/api/blogs/${postId}/unarchive`,
+        `${baseUrl}/api/blogs/${postId}/unarchive`,
         {},
         {
           headers: {

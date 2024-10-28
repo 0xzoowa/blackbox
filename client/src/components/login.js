@@ -23,6 +23,13 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  let baseUrl;
+
+  if (process.env.REACT_APP_ENVIRONMENT === "DEVELOPMENT") {
+    baseUrl = process.env.REACT_APP_API_URL_DEVELOPMENT;
+  }
+  baseUrl = process.env.REACT_APP_API_URL_PRODUCTION;
+
   const handleSubmit = (e) => {
     e.preventDefault();
     Login();
@@ -31,7 +38,7 @@ const Login = () => {
   const Login = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/auth/login",
+        `${baseUrl}/api/auth/login`,
         {
           email,
           password,
