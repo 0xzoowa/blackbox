@@ -22,8 +22,8 @@ const ArchivedBlogPost = () => {
       });
       setArchivedPosts(response.data.data);
     } catch (error) {
-      console.error("Error fetching archived posts:", error);
-      errorAlert(error.message);
+      //console.error("Error fetching archived posts:", error.message);
+      errorAlert("Error fetching archived posts");
     } finally {
       setLoading(false);
     }
@@ -46,11 +46,11 @@ const ArchivedBlogPost = () => {
           },
         }
       );
-      successAlert("Post unarchived successfully");
+      successAlert("Post unarchived");
       fetchArchivedPosts();
     } catch (error) {
-      console.log(error.message);
-      errorAlert("Error unarchiving blog post");
+      //console.log(error.message);
+      errorAlert("Error unarchiving post");
     }
   };
 
@@ -81,7 +81,7 @@ const ArchivedBlogPost = () => {
           >
             <h3 className="text-lg font-semibold mb-2">{post.title}</h3>
             <p className="text-sm text-gray-500 dark:text-gray-400 mb-2 mr-5">
-              Archived on: {new Date(post.archivedAt).toLocaleDateString()}
+              Archived on: {new Date(post.updatedAt).toLocaleDateString()}
             </p>
             {expandedPost === post._id && (
               <div>

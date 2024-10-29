@@ -23,7 +23,7 @@ const Blog = ({ blogPosts }) => {
 
   const fetchBlogPost = async () => {
     try {
-      console.log("base", baseUrl);
+      // console.log("base", baseUrl);
       const response = await axios.get(
         `${baseUrl}/api/blogs`,
 
@@ -36,8 +36,8 @@ const Blog = ({ blogPosts }) => {
       // console.log("data blog", response.data);
       return response.data.data;
     } catch (error) {
-      console.error("Error fetching blog posts:", error);
-      throw error;
+      //console.error("Error fetching blog posts:", error);
+      errorAlert("Error fetching blog posts");
     }
   };
   const fetchData = async () => {
@@ -54,12 +54,13 @@ const Blog = ({ blogPosts }) => {
             text: contentId.text,
           })),
           createdAt: post.createdAt,
+          updatedAt: post.updatedAt,
         }));
         setBlogPost(transformedData);
       }
     } catch (error) {
-      console.log(error.message);
-      errorAlert(error.message);
+      // console.log(error.message);
+      errorAlert("Cannot fetch data at this moment");
     } finally {
       setLoading(false);
     }
@@ -79,7 +80,7 @@ const Blog = ({ blogPosts }) => {
       successAlert("post deleted successfully");
       fetchData();
     } catch (error) {
-      console.log(error.message);
+      // console.log(error.message);
       errorAlert("Error deleting blog post");
     }
   };
@@ -98,7 +99,7 @@ const Blog = ({ blogPosts }) => {
       successAlert("post archived successfully");
       fetchData();
     } catch (error) {
-      console.log(error.message);
+      // console.log(error.message);
       errorAlert("Error archiving blog post");
     }
   };

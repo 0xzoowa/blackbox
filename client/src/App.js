@@ -55,49 +55,8 @@ const AppContent = () => {
 };
 
 const App = () => {
-  // const [isLoggedIn, setIsLoggedIn] = useState(false);
-  // const [user, setUser] = useState({});
-  // const [token, setToken] = useState("");
-  // const [isAdmin, setIsAdmin] = useState(false);
-  // const { blogPost } = useGlobalState();
-
-  // const toggleDarkMode = () => {
-  //   setDarkMode(!darkMode);
-  // };
-
-  // useEffect(() => {
-  //   if (user && user.role === "chief") {
-  //     setIsAdmin(true);
-  //     // Store auth data in localStorage
-  //     localStorage.setItem("token", token);
-  //     localStorage.setItem("isAdmin", isAdmin);
-  //     localStorage.setItem("isLoggedIn", isLoggedIn);
-  //     console.log("blog posts from api", blogPost);
-
-  //     console.log(isAdmin);
-  //   } else {
-  //     setIsAdmin(false);
-  //   }
-  // }, [user, blogPost]);
-
-  //blog functionalities
-  //persist state
-
   return (
     <AlertProvider>
-      {/* <MyContext.Provider
-        value={{
-          isLoggedIn,
-          setIsLoggedIn,
-          user,
-          setUser,
-          token,
-          setToken,
-          isAdmin,
-          setIsAdmin,
-          setBlogPost,
-        }}
-      > */}
       <GlobalStateProvider>
         <Router>
           <AppContent />

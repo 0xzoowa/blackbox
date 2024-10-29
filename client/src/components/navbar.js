@@ -23,10 +23,10 @@ const Navbar = ({ darkMode, toggleDarkMode }) => {
             >
               <img
                 src="/f.png"
-                alt="Home"
-                className="mr-1 w-10 h-10 md:w-14 md:h-14"
+                alt="blackbox"
+                className="mr-1 w-14 h-14 md:w-22 md:h-22"
               />
-              <span className="hidden sm:block">blackbox</span>
+              {/* <span className="hidden sm:block">blackbox</span> */}
             </NavLink>
           </div>
 

@@ -949,3 +949,158 @@ class Program
 // };
 
 // export default Navbar;
+/**
+ * import React from "react";
+import { useGlobalState } from "../context/globalState";
+
+const BlogPost = ({ title, content }) => {
+  const { baseUrl } = useGlobalState();
+
+  console.log("base", baseUrl);
+  return (
+    <article className="mb-8">
+      <h2 className="text-3xl font-bold mb-4">{title}</h2>
+      {Array.isArray(content) &&
+        content.map((item, index) => {
+          switch (item?.type) {
+            case "paragraph":
+              return (
+                <p key={index} className="mb-4">
+                  {item.text}
+                </p>
+              );
+            case "heading":
+              return (
+                <h3 key={index} className="text-2xl font-semibold mb-2">
+                  {item.text}
+                </h3>
+              );
+            case "subheading":
+              return (
+                <h4 key={index} className="text-xl font-medium mb-2">
+                  {item.text}
+                </h4>
+              );
+            case "image":
+              return (
+                <div key={index} className="mb-4">
+                  <img
+                    src={${baseUrl}/${item.text}}
+                    alt={item.alt || " "}
+                    // className="max-w-full h-auto rounded-lg shadow-md"
+                    className="max-w-[500px] max-h-[400px] w-auto h-auto object-contain rounded-lg shadow-md"
+                  />
+                </div>
+              );
+            case "code":
+              return (
+                <pre
+                  key={index}
+                  className="bg-gray-100 p-4 rounded-md mb-4 overflow-x-auto"
+                >
+                  <code>{item.text}</code>
+                </pre>
+              );
+            default:
+              return null;
+          }
+        })}
+    </article>
+  );
+};
+
+export default BlogPost;
+ */
+// import React from "react";
+// import { Link, useNavigate } from "react-router-dom";
+// import { useGlobalState } from "../context/globalState";
+
+// const Home = () => {
+//   const { isLoggedIn, logout } = useGlobalState();
+//   const navigate = useNavigate();
+
+//   const handleLogout = () => {
+//     logout();
+//     navigate("/");
+//   };
+//   return (
+//     <div className="flex flex-col items-center min-h-[calc(100vh-64px-56px)] p-12">
+//       <div className="flex flex-col items-center justify-center flex-grow  p-6">
+//         <h1 className="text-4xl font-bold mt-8 mb-8 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
+//           Hi👋🏾, Welcome to blackbox.
+//         </h1>
+//         {/* <p className="text-base mt-2 mb-8 text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-pink-300">
+//           <Link to="/about">what is blackbox?</Link>
+//         </p> */}
+//         <div className="space-x-4">
+//           {!isLoggedIn ? (
+//             <Link
+//               to="/login"
+//               className="px-6 py-2 text-purple-600 border border-purple-600 rounded-lg hover:bg-purple-50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50"
+//             >
+//               Login
+//             </Link>
+//           ) : (
+//             <button
+//               onClick={handleLogout}
+//               className="px-6 py-2 text-purple-600 border border-purple-600 rounded-lg hover:bg-purple-50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50"
+//             >
+//               Logout
+//             </button>
+//           )}
+
+//           <Link
+//             to="/guest"
+//             className="px-6 py-2 text-white bg-purple-600 rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50"
+//           >
+//             Tour as guest
+//           </Link>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default Home;
+// const [isLoggedIn, setIsLoggedIn] = useState(false);
+// const [user, setUser] = useState({});
+// const [token, setToken] = useState("");
+// const [isAdmin, setIsAdmin] = useState(false);
+// const { blogPost } = useGlobalState();
+
+// const toggleDarkMode = () => {
+//   setDarkMode(!darkMode);
+// };
+
+// useEffect(() => {
+//   if (user && user.role === "chief") {
+//     setIsAdmin(true);
+//     // Store auth data in localStorage
+//     localStorage.setItem("token", token);
+//     localStorage.setItem("isAdmin", isAdmin);
+//     localStorage.setItem("isLoggedIn", isLoggedIn);
+//     console.log("blog posts from api", blogPost);
+
+//     console.log(isAdmin);
+//   } else {
+//     setIsAdmin(false);
+//   }
+// }, [user, blogPost]);
+{
+  /* <MyContext.Provider
+        value={{
+          isLoggedIn,
+          setIsLoggedIn,
+          user,
+          setUser,
+          token,
+          setToken,
+          isAdmin,
+          setIsAdmin,
+          setBlogPost,
+        }}
+      > */
+}
+
+//blog functionalities
+//persist state

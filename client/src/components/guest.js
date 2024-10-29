@@ -5,12 +5,16 @@ import { useAlert } from "../context/alertProvider";
 
 const Guest = () => {
   const navigate = useNavigate();
-  const { guestLogin } = useGlobalState();
+  const { guestLogin, isLoggedIn } = useGlobalState();
   const { successAlert } = useAlert();
 
   useEffect(() => {
-    guestLogin();
-    successAlert("Logged in as guest");
+    if (isLoggedIn) {
+      successAlert("you're already logged in");
+    } else {
+      guestLogin();
+      successAlert("Logged in as guest");
+    }
     navigate("/blog");
   }, []);
 

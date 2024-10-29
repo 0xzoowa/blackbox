@@ -34,14 +34,10 @@ const Login = () => {
       );
       login(response.data.user, response.data.token);
       successAlert("Login successful");
-      // successAlert("login successful");
-      // setIsLoggedIn(true);
-      // setToken(response.data.token);
-      // setUser(response.data.user);
 
       navigate("/blog");
     } catch (error) {
-      console.error("Error logging in:", error);
+      // console.error("Error logging in:", error);
       errorAlert("error logging in");
     }
   };

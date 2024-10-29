@@ -15,8 +15,8 @@ const DeletedBlogPost = () => {
   const navigate = useNavigate();
   const gt = localStorage.getItem("token");
 
-  console.log(" local storage token ", gt);
-  console.log(" local storage loggedin ", isLoggedIn);
+  // console.log(" local storage token ", gt);
+  // console.log(" local storage loggedin ", isLoggedIn);
 
   const fetchDeletedPosts = async () => {
     try {
@@ -28,10 +28,10 @@ const DeletedBlogPost = () => {
         },
       });
       setDeletedPosts(response.data.data);
-      console.log("dp", response.data.data);
+      // console.log("dp", response.data.data);
     } catch (error) {
-      console.error("Error fetching deleted posts:", error);
-      errorAlert(error.message);
+      // console.error("Error fetching deleted posts:", error);
+      errorAlert("Error fetching deleted posts");
     } finally {
       setLoading(false);
     }
@@ -57,7 +57,7 @@ const DeletedBlogPost = () => {
       successAlert("Post restored successfully");
       fetchDeletedPosts();
     } catch (error) {
-      console.log(error.message);
+      // console.log(error.message);
       errorAlert("Error restoring blog post");
     }
   };
@@ -89,7 +89,7 @@ const DeletedBlogPost = () => {
           >
             <h3 className="text-lg font-semibold mb-2">{post.title}</h3>
             <p className="text-sm text-gray-500 dark:text-gray-400 mb-2 mr-5">
-              Deleted on: {new Date(post.deletedAt).toLocaleDateString()}
+              Deleted on: {new Date(post.updatedAt).toLocaleDateString()}
             </p>
             {expandedPost === post._id && (
               <div>

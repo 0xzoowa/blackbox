@@ -129,7 +129,7 @@ const BlogPostEditor = () => {
       }
     });
 
-    console.log("form-data", formData.getAll("media"));
+    // console.log("form-data", formData.getAll("media"));
 
     try {
       let response;
@@ -148,7 +148,7 @@ const BlogPostEditor = () => {
           },
         });
       }
-      console.log(response.data);
+      // console.log(response.data);
       if (response.status === 200 || response.status === 201) {
         successAlert(
           isEditing ? "Post updated successfully" : "Post created successfully"
@@ -157,7 +157,7 @@ const BlogPostEditor = () => {
       }
     } catch (error) {
       errorAlert(isEditing ? "Error updating post" : "Error creating post");
-      console.error("Error submitting post:", error);
+      // console.error("Error submitting post:", error);
     }
   };
 

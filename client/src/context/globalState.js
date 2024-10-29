@@ -41,17 +41,17 @@ export const GlobalStateProvider = ({ children }) => {
       localStorage.setItem("isLoggedIn", "true");
       localStorage.setItem("user", JSON.stringify(user));
       localStorage.setItem("isAdmin", isAdmin.toString());
-      console.log("token", token);
-      console.log("isLoggedIn", isLoggedIn);
-      console.log("isAdmin", isAdmin);
+      // console.log("token", token);
+      // console.log("isLoggedIn", isLoggedIn);
+      // console.log("isAdmin", isAdmin);
     } else if (isLoggedIn && user.role === "random") {
       localStorage.setItem("isLoggedIn", "true");
       localStorage.setItem("isAdmin", isAdmin.toString());
       localStorage.setItem("user", JSON.stringify(user));
-      console.log("token", token);
-      console.log("isLoggedIn", isLoggedIn);
-      console.log("isAdmin", isAdmin);
-      console.log("user", user);
+      // console.log("token", token);
+      // console.log("isLoggedIn", isLoggedIn);
+      // console.log("isAdmin", isAdmin);
+      // console.log("user", user);
     } else if (!isLoggedIn) {
       localStorage.removeItem("token");
       localStorage.removeItem("isLoggedIn");
