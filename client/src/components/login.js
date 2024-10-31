@@ -43,7 +43,7 @@ const Login = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-[calc(100vh-64px-56px)] bg-gray-100 dark:bg-gray-900 ">
+    <div className="flex flex-col items-center min-h-[calc(100vh-64px-56px)] p-4 md:p-12">
       <div className="px-8 py-6 mt-4 text-left bg-white dark:bg-gray-800 shadow-lg rounded-lg">
         <h3 className="text-2xl font-bold text-center text-purple-600 dark:text-purple-400">
           Login

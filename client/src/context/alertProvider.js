@@ -18,8 +18,15 @@ export const AlertProvider = ({ children }) => {
       draggable: true,
       progress: undefined,
       progressStyle: {
-        backgroundColor: "purple",
+        backgroundColor: "green",
       },
+      style: {
+        fontSize: "14px",
+        padding: "10px",
+        minHeight: "40px",
+        width: "200px",
+      },
+      toastId: "success-toast",
     });
   };
 
@@ -34,8 +41,15 @@ export const AlertProvider = ({ children }) => {
       draggable: true,
       progress: undefined,
       progressStyle: {
-        backgroundColor: "purple",
+        backgroundColor: "red",
       },
+      style: {
+        fontSize: "14px",
+        padding: "10px",
+        minHeight: "40px",
+        width: "200px",
+      },
+      toastId: "error-toast",
     });
   };
 

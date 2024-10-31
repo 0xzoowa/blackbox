@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useGlobalState } from "../context/globalState";
 
 const Home = () => {
-  const { isLoggedIn, logout } = useGlobalState();
+  const { isLoggedIn, logout, isAdmin } = useGlobalState();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -19,28 +19,28 @@ const Home = () => {
         </h1>
 
         <div className="flex flex-row items-center justify-center gap-3 md:gap-4 w-full">
+          <Link
+            to="/about"
+            className="whitespace-nowrap px-4 md:px-6 py-2 text-sm md:text-base text-purple-600 border border-purple-600 rounded-lg hover:bg-purple-50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50"
+          >
+            About
+          </Link>
+
           {!isLoggedIn ? (
             <Link
-              to="/login"
-              className="whitespace-nowrap px-4 md:px-6 py-2 text-sm md:text-base text-purple-600 border border-purple-600 rounded-lg hover:bg-purple-50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50"
+              to="/guest"
+              className="whitespace-nowrap px-4 md:px-6 py-2 text-sm md:text-base text-white bg-purple-600 rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50"
             >
-              Login
+              Tour as guest
             </Link>
           ) : (
             <button
               onClick={handleLogout}
-              className="whitespace-nowrap px-4 md:px-6 py-2 text-sm md:text-base text-purple-600 border border-purple-600 rounded-lg hover:bg-purple-50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50"
+              className="whitespace-nowrap px-4 md:px-6 py-2 text-sm md:text-base  text-white bg-purple-600 rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50"
             >
               Logout
             </button>
           )}
-
-          <Link
-            to="/guest"
-            className="whitespace-nowrap px-4 md:px-6 py-2 text-sm md:text-base text-white bg-purple-600 rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50"
-          >
-            Tour as guest
-          </Link>
         </div>
       </div>
     </div>
