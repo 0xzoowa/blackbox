@@ -1104,3 +1104,168 @@ export default BlogPost;
 
 //blog functionalities
 //persist state
+
+// return (
+//   <>
+//     {isLoggedIn ? (
+//       <div className="container mx-auto p-6 max-w-3xl min-h-[calc(100vh-64px-56px)]">
+//         {uniqueCategories.length > 0 && (
+//           <div className="mb-6 p-4 m-4">
+//             <div className="flex flex-wrap gap-2 items-center">
+//               <p className="text-xs font-semibold mr-2 ">Filter by Category:</p>
+//               {uniqueCategories.map((category) => (
+//                 <button
+//                   key={category}
+//                   onClick={() => handleCategoryToggle(category)}
+//                   className={`
+//                       px-3 py-1 rounded-full text-xs transition-colors
+//                       ${
+//                         selectedCategories.includes(category)
+//                           ? "bg-purple-600 text-white"
+//                           : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+//                       }
+//                     `}
+//                 >
+//                   {category}
+//                 </button>
+//               ))}
+//               {selectedCategories.length > 0 && (
+//                 <button
+//                   onClick={clearCategories}
+//                   className="text-red-500 hover:text-red-700 flex items-center text-xs"
+//                 >
+//                   <X size={16} className="mr-1" /> Clear
+//                 </button>
+//               )}
+//             </div>
+//             {selectedCategories.length > 0 && (
+//               <p className="text-xs text-gray-500 mt-2">
+//                 Showing posts in: {selectedCategories.join(", ")}
+//               </p>
+//             )}
+//           </div>
+//         )}
+
+//         {isFormVisible && <BlogPostEditor />}
+//         {!isFormVisible && filteredPosts.length > 0
+//           ? filteredPosts.map((post) => (
+//               <article
+//                 key={post._id}
+//                 className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 m-8 cursor-pointer relative group"
+//                 onClick={() => togglePostContent(post._id)}
+//               >
+//                 <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-gray-800 text-white text-xs px-2 py-1 rounded z-10">
+//                   Click to expand
+//                 </div>
+//                 {post.categories && (
+//                   <div className="absolute top-2 right-2 flex flex-wrap gap-1 text-xs p-4">
+//                     {post.categories.map((category) => (
+//                       <span
+//                         key={category}
+//                         className="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded-full"
+//                       >
+//                         {category}
+//                       </span>
+//                     ))}
+//                   </div>
+//                 )}
+
+//                 <h3 className="text-lg font-semibold mb-2">{post.title}</h3>
+//                 <p className="text-sm text-gray-500 dark:text-gray-400 mb-2 mr-5">
+//                   {new Date(post.createdAt).toLocaleDateString()}
+//                 </p>
+//                 {expandedPost === post._id ? (
+//                   <div>
+//                     <p className="text-gray-700 dark:text-gray-300 mb-4">
+//                       {post.content[0].text
+//                         ? post.content[0].text.substring(0, 100)
+//                         : ""}
+//                     </p>
+
+//                     <span>
+//                       <Link
+//                         to={`/post/${post._id}`}
+//                         className="text-indigo-600 hover:underline"
+//                       >
+//                         Read More ...
+//                       </Link>
+//                     </span>
+//                   </div>
+//                 ) : (
+//                   <div className="flex-grow max-w-3xl">
+//                     <p className="text-gray-700 dark:text-gray-300 mb-4">
+//                       {/* add checks to handle empty content array */}
+//                       {post.content[0].text
+//                         ? post.content[0].text.substring(0, 100)
+//                         : ""}
+//                     </p>
+//                   </div>
+//                 )}
+//                 {isLoggedIn && isAdmin && (
+//                   <div className="flex justify-end space-x-2 mt-2">
+//                     <button
+//                       onClick={(e) => {
+//                         e.stopPropagation();
+//                         handleEditPost(post);
+//                       }}
+//                       className="px-2 py-1 border hover:bg-indigo-600  hover:text-white border-gray-300 dark:border-gray-600 rounded-md  focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600"
+//                     >
+//                       Edit
+//                     </button>
+//                     <button
+//                       onClick={(e) => {
+//                         e.stopPropagation();
+//                         handleDeletePost(post._id);
+//                       }}
+//                       className="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-indigo-600  hover:text-white focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600"
+//                     >
+//                       Delete
+//                     </button>
+//                     <button
+//                       onClick={(e) => {
+//                         e.stopPropagation();
+//                         handleArchivePost(post._id);
+//                       }}
+//                       className="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-indigo-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600"
+//                     >
+//                       Archive
+//                     </button>
+//                   </div>
+//                 )}
+//               </article>
+//             ))
+//           : !isFormVisible && (
+//               <div className="flex flex-col items-center justify-center h-64">
+//                 <FileX size={64} className="text-gray-400 mb-4" />
+//                 <p className="text-base text-gray-600 dark:text-gray-400">
+//                   No blog posts found
+//                 </p>
+//               </div>
+//             )}
+//         {isAdmin && !isFormVisible && (
+//           <div className="fixed bottom-20 right-8 group">
+//             <Link
+//               to="/blog/create"
+//               onClick={(e) => {
+//                 setIsFormVisible(true);
+//               }}
+//               className="w-14 h-14 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 flex items-center justify-center shadow-lg"
+//             >
+//               <PlusCircle size={24} />
+//             </Link>
+//             <span className="absolute bottom-16 right-0 bg-indigo-800 text-white px-2 py-1 rounded text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+//               Add Blog Post
+//             </span>
+//           </div>
+//         )}
+//       </div>
+//     ) : (
+//       <div className="flex flex-col items-center justify-center h-64">
+//         <UserX size={64} className="mb-4" />
+//         <Link to="/guest" className=" hover:underline">
+//           Tour as guest to continue
+//         </Link>
+//       </div>
+//     )}
+//   </>
+// );

@@ -1,17 +1,22 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { PlusCircle, FileX, UserX } from "lucide-react";
+import { PlusCircle, FileX, UserX, X } from "lucide-react";
 import BlogPostEditor from "./blogPostEditor";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { useAlert } from "../context/alertProvider";
 import { useGlobalState } from "../context/globalState";
+import BlogLoading from "./blogLoading";
+import CursorTooltip from "./cursorToolTip";
 
 const Blog = ({ blogPosts }) => {
   const [loading, setLoading] = useState(false);
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [expandedPost, setExpandedPost] = useState(null);
-  const { isLoggedIn, setBlogPost, token, isAdmin, baseUrl } = useGlobalState();
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [uniqueCategories, setUniqueCategories] = useState([]);
+  const { isLoggedIn, setBlogPost, blogPost, token, isAdmin, baseUrl } =
+    useGlobalState();
   const { successAlert, errorAlert } = useAlert();
   const navigate = useNavigate();
 
@@ -19,6 +24,38 @@ const Blog = ({ blogPosts }) => {
   const handleEditPost = (post) => {
     navigate(`/blog/edit/${post._id}`, { state: { post } });
     // console.log("state post", post);
+  };
+
+  // Extract unique categories from blog posts
+  useEffect(() => {
+    const categories = new Set();
+    blogPost.forEach((post) => {
+      // Assuming categories are stored in the post object
+      post.categories?.forEach((category) => categories.add(category));
+    });
+    setUniqueCategories(Array.from(categories));
+  }, [blogPost]);
+
+  // Filter posts based on selected categories
+  const filteredPosts =
+    selectedCategories.length > 0
+      ? blogPosts.filter((post) =>
+          post.categories?.some((category) =>
+            selectedCategories.includes(category)
+          )
+        )
+      : blogPost;
+
+  const handleCategoryToggle = (category) => {
+    setSelectedCategories((prev) =>
+      prev.includes(category)
+        ? prev.filter((cat) => cat !== category)
+        : [...prev, category]
+    );
+  };
+
+  const clearCategories = () => {
+    setSelectedCategories([]);
   };
 
   const fetchBlogPost = async () => {
@@ -53,13 +90,14 @@ const Blog = ({ blogPosts }) => {
             type: contentId.type,
             text: contentId.text,
           })),
+          categories: post.categoryId.map((categoryId) => categoryId.name),
           createdAt: post.createdAt,
           updatedAt: post.updatedAt,
         }));
         setBlogPost(transformedData);
       }
     } catch (error) {
-      // console.log(error.message);
+      console.log(error.message);
       errorAlert("Cannot fetch data at this moment");
     } finally {
       setLoading(false);
@@ -107,20 +145,75 @@ const Blog = ({ blogPosts }) => {
   const togglePostContent = (postId) => {
     setExpandedPost(expandedPost === postId ? null : postId);
   };
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <BlogLoading />;
 
   return (
     <>
       {isLoggedIn ? (
         <div className="container mx-auto p-6 max-w-3xl min-h-[calc(100vh-64px-56px)]">
+          {uniqueCategories.length > 0 && (
+            <div className="mb-6 p-4 m-4">
+              <div className="flex flex-wrap gap-2 items-center">
+                <p className="text-xs font-semibold mr-2 ">
+                  Filter by Category:
+                </p>
+                {uniqueCategories.map((category) => (
+                  <button
+                    key={category}
+                    onClick={() => handleCategoryToggle(category)}
+                    className={`
+                      px-3 py-1 rounded-full text-xs transition-colors
+                      ${
+                        selectedCategories.includes(category)
+                          ? "bg-purple-600 text-white"
+                          : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                      }
+                    `}
+                  >
+                    {category}
+                  </button>
+                ))}
+                {selectedCategories.length > 0 && (
+                  <button
+                    onClick={clearCategories}
+                    className="text-red-500 hover:text-red-700 flex items-center text-xs"
+                  >
+                    <X size={16} className="mr-1" /> Clear
+                  </button>
+                )}
+              </div>
+              {selectedCategories.length > 0 && (
+                <p className="text-xs text-gray-500 mt-2">
+                  Showing posts in: {selectedCategories.join(", ")}
+                </p>
+              )}
+            </div>
+          )}
+
           {isFormVisible && <BlogPostEditor />}
-          {!isFormVisible && blogPosts.length > 0
-            ? blogPosts.map((post) => (
+          {!isFormVisible && filteredPosts.length > 0
+            ? filteredPosts.map((post) => (
                 <article
                   key={post._id}
-                  className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 m-8 cursor-pointer"
+                  className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 m-8 cursor-pointer relative group"
                   onClick={() => togglePostContent(post._id)}
                 >
+                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-gray-800 text-white text-xs px-2 py-1 rounded z-10">
+                    Click to expand
+                  </div>
+                  {post.categories && (
+                    <div className="absolute top-2 right-2 flex flex-wrap gap-1 text-xs p-4">
+                      {post.categories.map((category) => (
+                        <span
+                          key={category}
+                          className="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded-full"
+                        >
+                          {category}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
                   <h3 className="text-lg font-semibold mb-2">{post.title}</h3>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mb-2 mr-5">
                     {new Date(post.createdAt).toLocaleDateString()}
@@ -132,6 +225,7 @@ const Blog = ({ blogPosts }) => {
                           ? post.content[0].text.substring(0, 100)
                           : ""}
                       </p>
+
                       <span>
                         <Link
                           to={`/post/${post._id}`}

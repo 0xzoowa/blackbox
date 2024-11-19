@@ -11,6 +11,7 @@ const {
   archivedBlogPost,
   restoreBlogPost,
   unarchiveBlogPost,
+  allCategories,
 } = require("../controllers/blogController");
 const upload = require("../middleware/upload");
 const router = express.Router();
@@ -20,6 +21,9 @@ router.get("/deleted", protect, authorize("chief"), deletedBlogPost);
 
 // get all archived blog posts
 router.get("/archived", protect, authorize("chief"), archivedBlogPost);
+
+// get all categories
+router.get("/categories", allCategories);
 
 //get all blog posts
 router.get("/", getBlogs);

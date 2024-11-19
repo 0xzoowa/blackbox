@@ -1,18 +1,27 @@
 const { BlogPost, Content } = require("../models/Blog");
+const Category = require("../models/Category");
 
 exports.createBlog = async (req, res) => {
   try {
     console.log("body", req.body);
     console.log("files", req.files);
 
-    const { title, contents } = req.body;
+    const { title, contents, categories } = req.body;
     const parsedContents = JSON.parse(contents);
+    const parsedCategories = JSON.parse(categories);
+    console.log("pc", parsedCategories);
 
     // Check if contentArray exists and is an array
 
     if (!Array.isArray(parsedContents)) {
       return res.status(400).json({
         message: "Invalid content array format",
+      });
+    }
+
+    if (!Array.isArray(parsedCategories)) {
+      return res.status(400).json({
+        message: "Invalid data format",
       });
     }
 
@@ -54,6 +63,17 @@ exports.createBlog = async (req, res) => {
 
       const content = await Content.create(contentData);
       blog.content.push(content._id);
+    }
+    await blog.save();
+
+    for (const item of parsedCategories) {
+      const category = await Category.findOne({ name: item });
+      if (category) {
+        blog.categoryId.push(category._id);
+      } else {
+        const newCategory = await Category.create({ name: item });
+        blog.categoryId.push(newCategory._id);
+      }
     }
     await blog.save();
 
@@ -154,9 +174,8 @@ exports.getBlog = async (req, res) => {
     const { id } = req.params;
     const blog = await BlogPost.findOne({ _id: id, deleted: false })
       .populate("author", "username")
-      .populate({
-        path: "content",
-      })
+      .populate("content")
+      .populate("categoryId")
       .exec();
 
     if (!blog) {
@@ -175,9 +194,8 @@ exports.getBlogs = async (req, res) => {
   try {
     const blogs = await BlogPost.find({ deleted: false, archived: false })
       .populate("author", "username")
-      .populate({
-        path: "content",
-      })
+      .populate("content")
+      .populate("categoryId")
       .exec();
     return res.status(200).json({ success: true, data: blogs });
   } catch (error) {
@@ -206,16 +224,21 @@ exports.deleteBlog = async (req, res) => {
       });
     }
 
-    // Soft delete the blog post
-    blog.deleted = true;
-    await blog.save();
-
-    // Soft delete all associated content
-    await Content.updateMany({ blogId: blog._id }, { deleted: true });
-
+    const deletedContent = await Content.deleteMany({ blogId: blog._id });
+    if (!deletedContent.acknowledged) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Error deleting contents." });
+    }
+    const deletedPost = await BlogPost.deleteOne({ _id: blog._id });
+    if (!deletedPost.acknowledged) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Error deleting post." });
+    }
     return res.status(200).json({
       success: true,
-      message: "Blog post and associated content have been soft deleted",
+      message: "Blog post deleted",
     });
   } catch (error) {
     console.log(error.message);
@@ -365,6 +388,21 @@ exports.unarchiveBlogPost = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Blog post and associated content have been unarchived",
+    });
+  } catch (error) {
+    console.log(error.message);
+    return res
+      .status(400)
+      .json({ success: false, message: "Something went wrong." });
+  }
+};
+
+exports.allCategories = async (req, res) => {
+  try {
+    const categoryEnumValues = Category.schema.path("name").enumValues;
+    res.status(200).json({
+      success: true,
+      categories: categoryEnumValues,
     });
   } catch (error) {
     console.log(error.message);

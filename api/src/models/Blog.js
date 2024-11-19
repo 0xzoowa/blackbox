@@ -44,6 +44,12 @@ const blogPostSchema = new Schema(
     author: { type: mongoose.Types.ObjectId, ref: "User", required: true },
     title: { type: String, required: true },
     content: [{ type: mongoose.Types.ObjectId, ref: "Content" }],
+    categoryId: [
+      {
+        type: mongoose.Types.ObjectId,
+        ref: "Category",
+      },
+    ],
     archived: { type: Boolean, required: true, default: false },
     deleted: { type: Boolean, required: true, default: false },
     private: { type: Boolean, required: true, default: false },

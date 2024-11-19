@@ -65,6 +65,9 @@ const ContentBlock = ({
 const BlogPostEditor = () => {
   const [title, setTitle] = useState("");
   const [contents, setContents] = useState([]); //{ type: "paragraph", text: "" }
+  const [categories, setCategories] = useState([]);
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [subCategory, setSubCategory] = useState([]);
   const { token, baseUrl } = useGlobalState();
   const [file, setFile] = useState([]);
   const fileRefs = useRef([]);
@@ -74,12 +77,29 @@ const BlogPostEditor = () => {
   const location = useLocation();
   const [isEditing, setIsEditing] = useState(false);
 
+  // Fetch categories when component mounts
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get(`${baseUrl}/api/blogs/categories`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setCategories(response.data.categories);
+      } catch (error) {
+        errorAlert("Error fetching categories");
+      }
+    };
+    fetchCategories();
+  }, []);
+
   useEffect(() => {
     if (id && location.state && location.state.post) {
       const { title, content } = location.state.post;
       setTitle(title);
       setContents(content);
-
+      //setSelectedCategories(categories || []);
       setFile(file);
       setIsEditing(true);
       /**
@@ -89,6 +109,25 @@ const BlogPostEditor = () => {
        */
     }
   }, [id, location.state]);
+
+  const handleCategoryChange = (name) => {
+    setSelectedCategories((prev) => {
+      if (prev.includes(name)) {
+        return prev.filter((i) => i !== name);
+      }
+      if (prev.length >= 3) {
+        errorAlert("You can only select up to 3 categories");
+        return prev;
+      }
+      return [...prev, name];
+    });
+  };
+  const mapCategory = (categories, selectedCategories) => {
+    selectedCategories.map((id) => {
+      return categories[id];
+      // setSubCategory(categories[id]);
+    });
+  };
 
   const addContentBlock = () => {
     setContents([...contents, { type: "paragraph", text: "" }]);
@@ -120,9 +159,17 @@ const BlogPostEditor = () => {
       return;
     }
 
+    if (selectedCategories.length === 0) {
+      errorAlert("Please select at least one category.");
+      return;
+    }
+    console.log("first", selectedCategories);
+
     const formData = new FormData();
     formData.append("title", title);
     formData.append("contents", JSON.stringify(contents));
+    formData.append("categories", JSON.stringify(selectedCategories));
+
     file.forEach((file, index) => {
       if (file) {
         formData.append("media", file);
@@ -170,6 +217,34 @@ const BlogPostEditor = () => {
         placeholder="Enter blog post title"
         className="mb-4 p-2 border rounded w-full"
       />
+
+      <div className="mb-4">
+        <p className="text-xs font-semibold mb-2">
+          Categories (Select up to 3)
+        </p>
+        <div className="flex flex-wrap gap-2">
+          {categories.map((category, i) => (
+            <label
+              key={i}
+              className={`inline-flex text-xs items-center p-2 rounded-full cursor-pointer
+                ${
+                  selectedCategories.includes(category)
+                    ? "bg-purple-600 text-white"
+                    : "bg-gray-200 text-gray-700"
+                }`}
+            >
+              <input
+                type="checkbox"
+                className="hidden"
+                checked={selectedCategories.includes(category)}
+                onChange={() => handleCategoryChange(category)}
+              />
+              <span className="px-2">{category}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
       {contents.map((content, index) => (
         <ContentBlock
           key={index}
