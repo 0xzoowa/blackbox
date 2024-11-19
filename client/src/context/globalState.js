@@ -10,8 +10,8 @@ export const GlobalStateProvider = ({ children }) => {
   const [blogPost, setBlogPost] = useState([]);
   const [randomUser, setRandomUser] = useState({ role: "random" });
   const [baseUrl, setBaseUrl] = useState(
-    // process.env.REACT_APP_API_URL_PRODUCTION
-    process.env.REACT_APP_API_URL_DEVELOPMENT
+    process.env.REACT_APP_API_URL_PRODUCTION
+    //process.env.REACT_APP_API_URL_DEVELOPMENT
   );
 
   // Initial load from localStorage

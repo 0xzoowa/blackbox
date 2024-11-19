@@ -67,7 +67,6 @@ const BlogPostEditor = () => {
   const [contents, setContents] = useState([]); //{ type: "paragraph", text: "" }
   const [categories, setCategories] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
-  const [subCategory, setSubCategory] = useState([]);
   const { token, baseUrl } = useGlobalState();
   const [file, setFile] = useState([]);
   const fileRefs = useRef([]);
@@ -77,7 +76,6 @@ const BlogPostEditor = () => {
   const location = useLocation();
   const [isEditing, setIsEditing] = useState(false);
 
-  // Fetch categories when component mounts
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -125,7 +123,6 @@ const BlogPostEditor = () => {
   const mapCategory = (categories, selectedCategories) => {
     selectedCategories.map((id) => {
       return categories[id];
-      // setSubCategory(categories[id]);
     });
   };
 
@@ -163,7 +160,7 @@ const BlogPostEditor = () => {
       errorAlert("Please select at least one category.");
       return;
     }
-    console.log("first", selectedCategories);
+    //console.log("first", selectedCategories);
 
     const formData = new FormData();
     formData.append("title", title);
