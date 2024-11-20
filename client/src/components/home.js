@@ -12,7 +12,7 @@ const Home = () => {
   };
 
   return (
-    <div className="flex flex-col items-center min-h-[calc(100vh-64px-56px)] p-4 md:p-12">
+    <div className="flex flex-col items-center min-h-[calc(100vh-164px)] p-4 md:p-12">
       <div className="flex flex-col items-center justify-center flex-grow text-center">
         <h1 className="text-3xl md:text-4xl font-bold mt-8 mb-8 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
           Hi👋🏾, Welcome to blackbox.

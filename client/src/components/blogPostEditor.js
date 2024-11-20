@@ -14,11 +14,11 @@ const ContentBlock = ({
   fileRef,
 }) => {
   return (
-    <div className="mb-4 p-4 border rounded">
+    <div className="mb-4 p-3 sm:p-4 border rounded shadow-sm">
       <select
         value={type}
         onChange={(e) => onChange("type", e.target.value)}
-        className="mb-2 p-2 border rounded text-gray-400"
+        className="mb-2 p-2 border rounded w-full sm:w-auto text-sm sm:text-base text-gray-600 bg-white"
       >
         <option value="paragraph">Paragraph</option>
         <option value="heading">Heading</option>
@@ -28,35 +28,41 @@ const ContentBlock = ({
         <option value="video">Video</option>
         <option value="code">Code</option>
       </select>
+
       {["image", "audio", "video"].includes(type) ? (
-        <input
-          type="file"
-          ref={fileRef}
-          onChange={(e) => handleFileChange(index, e)}
-          className="mb-2 p-2 border rounded w-full"
-          accept={
-            type === "image"
-              ? "image/*"
-              : type === "audio"
-              ? "audio/*"
-              : "video/*"
-          }
-        />
+        <div className="mt-2">
+          <input
+            type="file"
+            ref={fileRef}
+            onChange={(e) => handleFileChange(index, e)}
+            className="block w-full text-sm sm:text-base file:mr-4 file:py-2 file:px-4
+              file:rounded file:border-0 file:text-sm file:font-semibold
+              file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
+            accept={
+              type === "image"
+                ? "image/*"
+                : type === "audio"
+                ? "audio/*"
+                : "video/*"
+            }
+          />
+        </div>
       ) : (
         <textarea
           value={content}
           name="text"
           onChange={(e) => onChange("text", e.target.value)}
-          className="mb-2 p-2 border rounded w-full"
-          rows="3"
+          className="mt-2 mb-2 p-2 border rounded w-full text-sm sm:text-base min-h-[100px] resize-y"
+          placeholder={`Enter your ${type} content here...`}
         />
       )}
+
       <button
         type="button"
         onClick={onRemove}
-        className=" bg-purple-600 hover:bg-red-500 text-white px-2 py-1 rounded"
+        className="mt-2 bg-purple-600 hover:bg-red-500 text-white px-3 py-1.5 rounded text-sm transition-colors duration-200 w-full sm:w-auto"
       >
-        Remove
+        Remove Block
       </button>
     </div>
   );
@@ -64,7 +70,7 @@ const ContentBlock = ({
 
 const BlogPostEditor = () => {
   const [title, setTitle] = useState("");
-  const [contents, setContents] = useState([]); //{ type: "paragraph", text: "" }
+  const [contents, setContents] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const { token, baseUrl } = useGlobalState();
@@ -93,18 +99,12 @@ const BlogPostEditor = () => {
   }, []);
 
   useEffect(() => {
-    if (id && location.state && location.state.post) {
+    if (id && location.state?.post) {
       const { title, content } = location.state.post;
       setTitle(title);
       setContents(content);
-      //setSelectedCategories(categories || []);
       setFile(file);
       setIsEditing(true);
-      /**
-       * pending functionalities
-       * edit post
-       * handle gif, video and audio media formats for upload
-       */
     }
   }, [id, location.state]);
 
@@ -120,28 +120,23 @@ const BlogPostEditor = () => {
       return [...prev, name];
     });
   };
-  const mapCategory = (categories, selectedCategories) => {
-    selectedCategories.map((id) => {
-      return categories[id];
-    });
-  };
 
   const addContentBlock = () => {
     setContents([...contents, { type: "paragraph", text: "" }]);
     setFile([...file, null]);
   };
 
-  const removeContentBlock = (index, type) => {
+  const removeContentBlock = (index) => {
     setContents(contents.filter((_, i) => i !== index));
-
     setFile(file.filter((_, i) => i !== index));
   };
 
-  const updateContentBlock = (index, field, value, type) => {
+  const updateContentBlock = (index, field, value) => {
     const newContents = [...contents];
     newContents[index][field] = value;
     setContents(newContents);
   };
+
   const handleFileChange = (index, event) => {
     const newFiles = [...file];
     newFiles[index] = event.target.files[0];
@@ -160,20 +155,17 @@ const BlogPostEditor = () => {
       errorAlert("Please select at least one category.");
       return;
     }
-    //console.log("first", selectedCategories);
 
     const formData = new FormData();
     formData.append("title", title);
     formData.append("contents", JSON.stringify(contents));
     formData.append("categories", JSON.stringify(selectedCategories));
 
-    file.forEach((file, index) => {
+    file.forEach((file) => {
       if (file) {
         formData.append("media", file);
       }
     });
-
-    // console.log("form-data", formData.getAll("media"));
 
     try {
       let response;
@@ -192,7 +184,7 @@ const BlogPostEditor = () => {
           },
         });
       }
-      // console.log(response.data);
+
       if (response.status === 200 || response.status === 201) {
         successAlert(
           isEditing ? "Post updated successfully" : "Post created successfully"
@@ -201,78 +193,86 @@ const BlogPostEditor = () => {
       }
     } catch (error) {
       errorAlert(isEditing ? "Error updating post" : "Error creating post");
-      // console.error("Error submitting post:", error);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-2xl mx-auto mt-8 ">
-      <input
-        type="text"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        placeholder="Enter blog post title"
-        className="mb-4 p-2 border rounded w-full"
-      />
+    <div className="min-h-screen bg-gray-50 py-6 px-4 sm:px-6 lg:px-8">
+      <form onSubmit={handleSubmit} className="max-w-2xl mx-auto space-y-6">
+        <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm">
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Enter blog post title"
+            className="mb-4 p-3 border rounded-lg w-full text-lg sm:text-xl font-medium placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+          />
 
-      <div className="mb-4">
-        <p className="text-xs font-semibold mb-2">
-          Categories (Select up to 3)
-        </p>
-        <div className="flex flex-wrap gap-2">
-          {categories.map((category, i) => (
-            <label
-              key={i}
-              className={`inline-flex text-xs items-center p-2 rounded-full cursor-pointer
-                ${
-                  selectedCategories.includes(category)
-                    ? "bg-purple-600 text-white"
-                    : "bg-gray-200 text-gray-700"
-                }`}
-            >
-              <input
-                type="checkbox"
-                className="hidden"
-                checked={selectedCategories.includes(category)}
-                onChange={() => handleCategoryChange(category)}
+          <div className="mb-6">
+            <p className="text-sm font-medium text-gray-700 mb-2">
+              Categories (Select up to 3)
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {categories.map((category, i) => (
+                <label
+                  key={i}
+                  className={`inline-flex items-center p-2 rounded-full cursor-pointer transition-all duration-200
+                    ${
+                      selectedCategories.includes(category)
+                        ? "bg-purple-600 text-white"
+                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    }`}
+                >
+                  <input
+                    type="checkbox"
+                    className="hidden"
+                    checked={selectedCategories.includes(category)}
+                    onChange={() => handleCategoryChange(category)}
+                  />
+                  <span className="px-2 text-sm">{category}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          {contents.map((content, index) => (
+            <div key={index} className="bg-white rounded-lg shadow-sm">
+              <ContentBlock
+                type={content.type}
+                content={content.text}
+                onChange={(field, value) =>
+                  updateContentBlock(index, field, value)
+                }
+                onRemove={() => removeContentBlock(index)}
+                handleFileChange={handleFileChange}
+                index={index}
+                fileRef={(el) => (fileRefs.current[index] = el)}
               />
-              <span className="px-2">{category}</span>
-            </label>
+            </div>
           ))}
         </div>
-      </div>
 
-      {contents.map((content, index) => (
-        <ContentBlock
-          key={index}
-          type={content.type}
-          content={content.text}
-          onChange={(field, value) =>
-            updateContentBlock(index, field, value, content.type)
-          }
-          onRemove={() => removeContentBlock(index, content.type)}
-          setFile={setFile}
-          handleFileChange={handleFileChange}
-          index={index}
-          fileRef={(el) => (fileRefs.current[index] = el)}
-        />
-      ))}
-      <div className="flex flex-col sm:flex-row sm:justify-between items-center space-y-4 sm:space-y-0 sm:space-x-4 mt-6">
-        <button
-          type="button"
-          onClick={addContentBlock}
-          className="w-full sm:w-auto bg-purple-600 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-300"
-        >
-          Add Content Block
-        </button>
-        <button
-          type="submit"
-          className="w-full sm:w-auto bg-purple-600 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition duration-300"
-        >
-          Submit Post
-        </button>
-      </div>
-    </form>
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 sm:relative sm:border-0 sm:bg-transparent sm:p-0">
+          <div className="flex flex-col sm:flex-row gap-3 max-w-2xl mx-auto">
+            <button
+              type="button"
+              onClick={addContentBlock}
+              className="w-full sm:w-1/2 bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50"
+            >
+              Add Content Block
+            </button>
+            <button
+              type="submit"
+              className="w-full sm:w-1/2 bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
+            >
+              {isEditing ? "Update Post" : "Publish Post"}
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
   );
 };
 

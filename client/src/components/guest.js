@@ -10,10 +10,10 @@ const Guest = () => {
 
   useEffect(() => {
     if (isLoggedIn) {
-      successAlert("you're already logged in");
+      successAlert("you're in.");
     } else {
       guestLogin();
-      successAlert("Logged in as guest");
+      successAlert("guest mode is enabled.");
     }
     navigate("/blog");
   }, []);

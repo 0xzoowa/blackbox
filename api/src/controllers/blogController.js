@@ -192,15 +192,47 @@ exports.getBlog = async (req, res) => {
 
 exports.getBlogs = async (req, res) => {
   try {
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 10;
+    const skip = (page - 1) * limit;
+
+    const totalBlogs = await BlogPost.countDocuments({
+      deleted: false,
+      archived: false,
+    });
+
     const blogs = await BlogPost.find({ deleted: false, archived: false })
+      .sort({ createdAt: -1 }) // Sort by createdAt in descending order
       .populate("author", "username")
       .populate("content")
       .populate("categoryId")
+      .skip(skip)
+      .limit(limit)
       .exec();
-    return res.status(200).json({ success: true, data: blogs });
+
+    // Calculate total pages
+    const totalPages = Math.ceil(totalBlogs / limit);
+
+    // Return paginated data
+    return res.status(200).json({
+      success: true,
+      data: blogs,
+      pagination: {
+        totalBlogs,
+        currentPage: page,
+        totalPages,
+        limit,
+      },
+    });
+    // const blogs = await BlogPost.find({ deleted: false, archived: false })
+    //   .populate("author", "username")
+    //   .populate("content")
+    //   .populate("categoryId")
+    //   .exec();
+    // return res.status(200).json({ success: true, data: blogs });
   } catch (error) {
     console.log(error.message);
-    res.status(400).json({ message: "something went wrong." });
+    res.status(400).json({ success: false, message: "something went wrong." });
   }
 };
 

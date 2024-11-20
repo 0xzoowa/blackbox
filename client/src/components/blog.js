@@ -1,13 +1,12 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { PlusCircle, FileX, UserX, X } from "lucide-react";
+import { PlusCircle, FileX, UserX, X, Share2 } from "lucide-react";
 import BlogPostEditor from "./blogPostEditor";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { useAlert } from "../context/alertProvider";
 import { useGlobalState } from "../context/globalState";
 import BlogLoading from "./blogLoading";
-import CursorTooltip from "./cursorToolTip";
 
 const Blog = ({ blogPosts }) => {
   const [loading, setLoading] = useState(false);
@@ -20,23 +19,18 @@ const Blog = ({ blogPosts }) => {
   const { successAlert, errorAlert } = useAlert();
   const navigate = useNavigate();
 
-  //edit post is non functional at the moment
   const handleEditPost = (post) => {
     navigate(`/blog/edit/${post._id}`, { state: { post } });
-    // console.log("state post", post);
   };
 
-  // Extract unique categories from blog posts
   useEffect(() => {
     const categories = new Set();
     blogPost.forEach((post) => {
-      // Assuming categories are stored in the post object
       post.categories?.forEach((category) => categories.add(category));
     });
     setUniqueCategories(Array.from(categories));
   }, [blogPost]);
 
-  // Filter posts based on selected categories
   const filteredPosts =
     selectedCategories.length > 0
       ? blogPosts.filter((post) =>
@@ -60,29 +54,35 @@ const Blog = ({ blogPosts }) => {
 
   const fetchBlogPost = async () => {
     try {
-      // console.log("base", baseUrl);
-      const response = await axios.get(
-        `${baseUrl}/api/blogs`,
-
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      // console.log("data blog", response.data);
+      const response = await axios.get(`${baseUrl}/api/blogs`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       return response.data.data;
     } catch (error) {
-      //console.error("Error fetching blog posts:", error);
       errorAlert("Error fetching blog posts");
     }
   };
+
+  // Handle share functionality
+  const handleShare = async (e, postId) => {
+    e.stopPropagation(); // Prevent post expansion when clicking share
+    const shareUrl = `${window.location.origin}/post/${postId}`;
+
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      successAlert("Link copied to clipboard!");
+    } catch (err) {
+      errorAlert("Failed to copy link");
+    }
+  };
+
   const fetchData = async () => {
     try {
       setLoading(true);
       const blogs = await fetchBlogPost();
       if (blogs) {
-        // Transform the data to match expected format
         const transformedData = blogs.map((post) => ({
           _id: post._id,
           title: post.title,
@@ -97,7 +97,6 @@ const Blog = ({ blogPosts }) => {
         setBlogPost(transformedData);
       }
     } catch (error) {
-      console.log(error.message);
       errorAlert("Cannot fetch data at this moment");
     } finally {
       setLoading(false);
@@ -118,7 +117,6 @@ const Blog = ({ blogPosts }) => {
       successAlert("post deleted successfully");
       fetchData();
     } catch (error) {
-      // console.log(error.message);
       errorAlert("Error deleting blog post");
     }
   };
@@ -137,7 +135,6 @@ const Blog = ({ blogPosts }) => {
       successAlert("post archived successfully");
       fetchData();
     } catch (error) {
-      // console.log(error.message);
       errorAlert("Error archiving blog post");
     }
   };
@@ -145,42 +142,45 @@ const Blog = ({ blogPosts }) => {
   const togglePostContent = (postId) => {
     setExpandedPost(expandedPost === postId ? null : postId);
   };
+
   if (loading) return <BlogLoading />;
 
   return (
     <>
       {isLoggedIn ? (
-        <div className="container mx-auto p-6 max-w-3xl min-h-[calc(100vh-64px-56px)]">
+        <div className="container mx-auto px-4 sm:px-6 max-w-3xl min-h-[calc(100vh-64px-56px)]">
           {uniqueCategories.length > 0 && (
-            <div className="mb-6 p-4 m-4">
+            <div className="mb-4 sm:mb-6 p-3 sm:p-4">
               <div className="flex flex-wrap gap-2 items-center">
-                <p className="text-xs font-semibold mr-2 ">
+                <p className="text-xs font-semibold mr-2 w-full sm:w-auto mb-2 sm:mb-0">
                   Filter by Category:
                 </p>
-                {uniqueCategories.map((category) => (
-                  <button
-                    key={category}
-                    onClick={() => handleCategoryToggle(category)}
-                    className={`
-                      px-3 py-1 rounded-full text-xs transition-colors
-                      ${
-                        selectedCategories.includes(category)
-                          ? "bg-purple-600 text-white"
-                          : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                      }
-                    `}
-                  >
-                    {category}
-                  </button>
-                ))}
-                {selectedCategories.length > 0 && (
-                  <button
-                    onClick={clearCategories}
-                    className="text-red-500 hover:text-red-700 flex items-center text-xs"
-                  >
-                    <X size={16} className="mr-1" /> Clear
-                  </button>
-                )}
+                <div className="flex flex-wrap gap-2">
+                  {uniqueCategories.map((category) => (
+                    <button
+                      key={category}
+                      onClick={() => handleCategoryToggle(category)}
+                      className={`
+                        px-2 sm:px-3 py-1 rounded-full text-xs transition-colors
+                        ${
+                          selectedCategories.includes(category)
+                            ? "bg-purple-600 text-white"
+                            : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                        }
+                      `}
+                    >
+                      {category}
+                    </button>
+                  ))}
+                  {selectedCategories.length > 0 && (
+                    <button
+                      onClick={clearCategories}
+                      className="text-red-500 hover:text-red-700 flex items-center text-xs"
+                    >
+                      <X size={16} className="mr-1" /> Clear
+                    </button>
+                  )}
+                </div>
               </div>
               {selectedCategories.length > 0 && (
                 <p className="text-xs text-gray-500 mt-2">
@@ -191,19 +191,21 @@ const Blog = ({ blogPosts }) => {
           )}
 
           {isFormVisible && <BlogPostEditor />}
-          {!isFormVisible && filteredPosts.length > 0
-            ? filteredPosts.map((post) => (
-                <article
-                  key={post._id}
-                  className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 m-8 cursor-pointer relative group"
-                  onClick={() => togglePostContent(post._id)}
-                >
-                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-gray-800 text-white text-xs px-2 py-1 rounded z-10">
-                    Click to expand
-                  </div>
-                  {post.categories && (
-                    <div className="absolute top-2 right-2 flex flex-wrap gap-1 text-xs p-4">
-                      {post.categories.map((category) => (
+
+          <div className="space-y-4 sm:space-y-6">
+            {!isFormVisible && filteredPosts.length > 0
+              ? filteredPosts.map((post) => (
+                  <article
+                    key={post._id}
+                    className="border border-gray-200 dark:border-gray-700 rounded-lg p-3 sm:p-4 relative group"
+                    onClick={() => togglePostContent(post._id)}
+                  >
+                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-gray-800 text-white text-xs px-2 py-1 rounded z-10 hidden sm:block">
+                      Click to expand
+                    </div>
+
+                    <div className="flex flex-wrap gap-1 mb-2">
+                      {post.categories?.map((category) => (
                         <span
                           key={category}
                           className="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded-full"
@@ -212,101 +214,110 @@ const Blog = ({ blogPosts }) => {
                         </span>
                       ))}
                     </div>
-                  )}
 
-                  <h3 className="text-lg font-semibold mb-2">{post.title}</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-2 mr-5">
-                    {new Date(post.createdAt).toLocaleDateString()}
-                  </p>
-                  {expandedPost === post._id ? (
-                    <div>
-                      <p className="text-gray-700 dark:text-gray-300 mb-4">
-                        {post.content[0].text
-                          ? post.content[0].text.substring(0, 100)
-                          : ""}
+                    <h3 className="text-base sm:text-lg font-semibold mb-2">
+                      {post.title}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-2">
+                      {new Date(post.createdAt).toLocaleDateString()}
+                    </p>
+
+                    <div className="prose prose-sm sm:prose">
+                      <p className="text-gray-700 dark:text-gray-300 mb-4 text-sm sm:text-base line-clamp-3">
+                        {post.content[0]?.text || ""}
                       </p>
+                    </div>
 
-                      <span>
+                    {/* {expandedPost === post._id && (
+                      <Link
+                        to={`/post/${post._id}`}
+                        className="text-indigo-600 hover:underline text-sm sm:text-base"
+                      >
+                        Read More ...
+                      </Link>
+                    )} */}
+                    <div className="flex justify-between items-center">
+                      {expandedPost === post._id && (
                         <Link
                           to={`/post/${post._id}`}
-                          className="text-indigo-600 hover:underline"
+                          className="text-indigo-600 hover:underline text-sm sm:text-base"
                         >
                           Read More ...
                         </Link>
-                      </span>
-                    </div>
-                  ) : (
-                    <div className="flex-grow max-w-3xl">
-                      <p className="text-gray-700 dark:text-gray-300 mb-4">
-                        {/* add checks to handle empty content array */}
-                        {post.content[0].text
-                          ? post.content[0].text.substring(0, 100)
-                          : ""}
-                      </p>
-                    </div>
-                  )}
-                  {isLoggedIn && isAdmin && (
-                    <div className="flex justify-end space-x-2 mt-2">
+                      )}
+
                       <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleEditPost(post);
-                        }}
-                        className="px-2 py-1 border hover:bg-indigo-600  hover:text-white border-gray-300 dark:border-gray-600 rounded-md  focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600"
+                        onClick={(e) => handleShare(e, post._id)}
+                        className="ml-auto flex items-center gap-1 px-2 py-1 text-xs sm:text-sm text-gray-600 hover:text-indigo-600 transition-colors"
+                        title="Share post"
                       >
-                        Edit
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeletePost(post._id);
-                        }}
-                        className="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-indigo-600  hover:text-white focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600"
-                      >
-                        Delete
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleArchivePost(post._id);
-                        }}
-                        className="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-indigo-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600"
-                      >
-                        Archive
+                        <Share2 size={16} />
+                        <span className="hidden sm:inline">Share</span>
                       </button>
                     </div>
-                  )}
-                </article>
-              ))
-            : !isFormVisible && (
-                <div className="flex flex-col items-center justify-center h-64">
-                  <FileX size={64} className="text-gray-400 mb-4" />
-                  <p className="text-base text-gray-600 dark:text-gray-400">
-                    No blog posts found
-                  </p>
-                </div>
-              )}
+
+                    {isLoggedIn && isAdmin && (
+                      <div className="flex flex-wrap gap-2 justify-end mt-3">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEditPost(post);
+                          }}
+                          className="px-2 py-1 text-xs sm:text-sm border hover:bg-indigo-600 hover:text-white border-gray-300 dark:border-gray-600 rounded-md"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeletePost(post._id);
+                          }}
+                          className="px-2 py-1 text-xs sm:text-sm border border-gray-300 dark:border-gray-600 rounded-md hover:bg-indigo-600 hover:text-white"
+                        >
+                          Delete
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleArchivePost(post._id);
+                          }}
+                          className="px-2 py-1 text-xs sm:text-sm border border-gray-300 dark:border-gray-600 rounded-md hover:bg-indigo-600 hover:text-white"
+                        >
+                          Archive
+                        </button>
+                      </div>
+                    )}
+                  </article>
+                ))
+              : !isFormVisible && (
+                  <div className="flex flex-col items-center justify-center h-64">
+                    <FileX size={48} className="text-gray-400 mb-4" />
+                    <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
+                      No blog posts found
+                    </p>
+                  </div>
+                )}
+          </div>
+
           {isAdmin && !isFormVisible && (
-            <div className="fixed bottom-20 right-8 group">
+            <div className="fixed bottom-16 sm:bottom-20 right-4 sm:right-8 group">
               <Link
                 to="/blog/create"
-                onClick={(e) => {
-                  setIsFormVisible(true);
-                }}
-                className="w-14 h-14 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 flex items-center justify-center shadow-lg"
+                onClick={() => setIsFormVisible(true)}
+                className="w-12 h-12 sm:w-14 sm:h-14 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 flex items-center justify-center shadow-lg"
               >
-                <PlusCircle size={24} />
+                <PlusCircle size={20} className="sm:w-6 sm:h-6" />
               </Link>
-              <span className="absolute bottom-16 right-0 bg-indigo-800 text-white px-2 py-1 rounded text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+              <span className="absolute bottom-14 sm:bottom-16 right-0 bg-indigo-800 text-white px-2 py-1 rounded text-xs sm:text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
                 Add Blog Post
               </span>
             </div>
           )}
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center h-64">
-          <UserX size={64} className="mb-4" />
-          <Link to="/guest" className=" hover:underline">
+        <div className="flex flex-col items-center justify-center h-64 px-4 text-center">
+          <UserX size={48} className="mb-4" />
+          <Link to="/guest" className="hover:underline text-sm sm:text-base">
             Tour as guest to continue
           </Link>
         </div>
