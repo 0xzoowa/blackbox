@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { PlusCircle, FileX, UserX, X, Share2 } from "lucide-react";
+import {
+  PlusCircle,
+  FileX,
+  UserX,
+  X,
+  Share2,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import BlogPostEditor from "./blogPostEditor";
 import axios from "axios";
 import { Link } from "react-router-dom";
@@ -14,6 +22,13 @@ const Blog = ({ blogPosts }) => {
   const [expandedPost, setExpandedPost] = useState(null);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [uniqueCategories, setUniqueCategories] = useState([]);
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 0,
+    totalBlogs: 0,
+    limit: 10,
+  });
+
   const { isLoggedIn, setBlogPost, blogPost, token, isAdmin, baseUrl } =
     useGlobalState();
   const { successAlert, errorAlert } = useAlert();
@@ -52,14 +67,18 @@ const Blog = ({ blogPosts }) => {
     setSelectedCategories([]);
   };
 
-  const fetchBlogPost = async () => {
+  const fetchBlogPost = async (page = 1, limit = 5) => {
     try {
       const response = await axios.get(`${baseUrl}/api/blogs`, {
+        params: { page, limit },
         headers: {
           "Content-Type": "application/json",
         },
       });
-      return response.data.data;
+      return {
+        blogs: response.data.data,
+        paginationInfo: response.data.pagination,
+      };
     } catch (error) {
       errorAlert("Error fetching blog posts");
     }
@@ -78,10 +97,10 @@ const Blog = ({ blogPosts }) => {
     }
   };
 
-  const fetchData = async () => {
+  const fetchData = async (newPage = 1) => {
     try {
       setLoading(true);
-      const blogs = await fetchBlogPost();
+      const { blogs, paginationInfo } = await fetchBlogPost(newPage);
       if (blogs) {
         const transformedData = blogs.map((post) => ({
           _id: post._id,
@@ -95,6 +114,7 @@ const Blog = ({ blogPosts }) => {
           updatedAt: post.updatedAt,
         }));
         setBlogPost(transformedData);
+        setPagination(paginationInfo);
       }
     } catch (error) {
       errorAlert("Cannot fetch data at this moment");
@@ -141,6 +161,17 @@ const Blog = ({ blogPosts }) => {
 
   const togglePostContent = (postId) => {
     setExpandedPost(expandedPost === postId ? null : postId);
+  };
+
+  const handlePageChange = async (newPage) => {
+    try {
+      setLoading(true);
+      await fetchData(newPage);
+    } catch (error) {
+      errorAlert("Error changing page");
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (loading) return <BlogLoading />;
@@ -192,7 +223,7 @@ const Blog = ({ blogPosts }) => {
 
           {isFormVisible && <BlogPostEditor />}
 
-          <div className="space-y-4 sm:space-y-6">
+          <div className="pt-6 space-y-4 sm:space-y-6">
             {!isFormVisible && filteredPosts.length > 0
               ? filteredPosts.map((post) => (
                   <article
@@ -255,7 +286,6 @@ const Blog = ({ blogPosts }) => {
                         <span className="hidden sm:inline">Share</span>
                       </button>
                     </div>
-
                     {isLoggedIn && isAdmin && (
                       <div className="flex flex-wrap gap-2 justify-end mt-3">
                         <button
@@ -298,6 +328,49 @@ const Blog = ({ blogPosts }) => {
                   </div>
                 )}
           </div>
+
+          {/* Pagination Controls */}
+          {pagination.totalPages > 1 && (
+            <div className="flex flex-col sm:flex-row justify-center items-center mt-6 space-y-2 sm:space-y-0 sm:space-x-4">
+              <button
+                onClick={() => handlePageChange(pagination.currentPage - 1)}
+                disabled={pagination.currentPage === 1}
+                className={`
+        flex items-center px-4 py-2 rounded-md text-sm w-full sm:w-auto justify-center
+        ${
+          pagination.currentPage === 1
+            ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+            : "bg-indigo-600 text-white hover:bg-indigo-700"
+        }
+      `}
+              >
+                <ChevronLeft size={16} className="mr-1" /> Previous
+              </button>
+
+              <span className="text-sm text-gray-600 mx-4 hidden sm:inline">
+                Page {pagination.currentPage} of {pagination.totalPages}
+              </span>
+
+              <span className="text-sm text-gray-600 mb-2 sm:hidden">
+                {pagination.currentPage}/{pagination.totalPages}
+              </span>
+
+              <button
+                onClick={() => handlePageChange(pagination.currentPage + 1)}
+                disabled={pagination.currentPage === pagination.totalPages}
+                className={`
+        flex items-center px-4 py-2 rounded-md text-sm w-full sm:w-auto justify-center
+        ${
+          pagination.currentPage === pagination.totalPages
+            ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+            : "bg-indigo-600 text-white hover:bg-indigo-700"
+        }
+      `}
+              >
+                Next <ChevronRight size={16} className="ml-1" />
+              </button>
+            </div>
+          )}
 
           {isAdmin && !isFormVisible && (
             <div className="fixed bottom-16 sm:bottom-20 right-4 sm:right-8 group">

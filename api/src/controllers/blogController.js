@@ -193,7 +193,7 @@ exports.getBlog = async (req, res) => {
 exports.getBlogs = async (req, res) => {
   try {
     const page = parseInt(req.query.page, 10) || 1;
-    const limit = parseInt(req.query.limit, 10) || 10;
+    const limit = parseInt(req.query.limit, 10) || 5;
     const skip = (page - 1) * limit;
 
     const totalBlogs = await BlogPost.countDocuments({
@@ -224,12 +224,6 @@ exports.getBlogs = async (req, res) => {
         limit,
       },
     });
-    // const blogs = await BlogPost.find({ deleted: false, archived: false })
-    //   .populate("author", "username")
-    //   .populate("content")
-    //   .populate("categoryId")
-    //   .exec();
-    // return res.status(200).json({ success: true, data: blogs });
   } catch (error) {
     console.log(error.message);
     res.status(400).json({ success: false, message: "something went wrong." });
