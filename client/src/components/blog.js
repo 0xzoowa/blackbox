@@ -223,7 +223,7 @@ const Blog = ({ blogPosts }) => {
 
           {isFormVisible && <BlogPostEditor />}
 
-          <div className="pt-6 space-y-4 sm:space-y-6">
+          <div className="pt-4 space-y-4 sm:space-y-6">
             {!isFormVisible && filteredPosts.length > 0
               ? filteredPosts.map((post) => (
                   <article
